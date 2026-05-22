@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 ประวัติคูปอง</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Kanit',sans-serif;background:linear-gradient(135deg,#ffe0f0 0%,#e8d5ff 30%,#d0f0ff 60%,#ffd6e0 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 20px;overflow-x:hidden;}
+.title-area{text-align:center;margin-bottom:24px;position:relative;z-index:1;}
+.title-area h1{font-size:clamp(1.6rem,6vw,2.5rem);font-weight:900;background:linear-gradient(135deg,#ff6b9d,#c77dff,#4cc9f0,#ff6b9d);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite;}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.subtitle{font-size:0.95rem;color:#c77dff;margin-top:6px;font-family:'Mitr',sans-serif;}
+.container{width:100%;max-width:480px;z-index:1;}
+.stats{display:flex;gap:12px;margin-bottom:20px;}
+.stat-card{flex:1;background:white;border-radius:16px;padding:14px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+.stat-num{font-size:1.8rem;font-weight:900;color:#ff6b9d;}
+.stat-label{font-size:0.75rem;color:#aaa;font-family:'Mitr',sans-serif;margin-top:2px;}
+.history-list{display:flex;flex-direction:column;gap:10px;}
+.history-item{background:white;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 15px rgba(0,0,0,0.06);border-left:4px solid #ff6b9d;transition:opacity 0.3s;}
+.history-item.used-item{opacity:0.55;border-left-color:#ddd;}
+.history-emoji{font-size:1.8rem;flex-shrink:0;}
+.history-info{flex:1;}
+.history-name{font-size:1rem;font-weight:700;color:#333;}
+.history-date{font-size:0.75rem;color:#aaa;font-family:'Mitr',sans-serif;margin-top:2px;}
+.used-badge{padding:5px 12px;border-radius:12px;font-size:0.72rem;font-weight:600;font-family:'Mitr',sans-serif;cursor:pointer;border:none;flex-shrink:0;}
+.used-badge.not-used{background:#ff6b9d;color:white;}
+.used-badge.not-used:hover{background:#e05585;}
+.used-badge.is-used{background:#eee;color:#aaa;cursor:default;}
+.empty{text-align:center;padding:50px 20px;color:#ccc;font-family:'Mitr',sans-serif;font-size:1rem;}
+.empty div:first-child{font-size:3rem;margin-bottom:12px;}
+.btn-back{width:100%;padding:15px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b9d,#c77dff);color:white;box-shadow:0 8px 25px rgba(255,107,157,0.35);margin-top:20px;transition:all 0.2s;}
+.btn-back:hover{transform:translateY(-2px);}
+</style>
+</head>
+<body>
+<div class="title-area">
+  <h1>📋 ประวัติคูปอง</h1>
+  <p class="subtitle">รวมทุกคูปองที่เคยสุ่มได้ 💝</p>
+</div>
+<div class="container">
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">สุ่มไปแล้ว</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statUsed" style="color:#06d6a0">0</div>
+      <div class="stat-label">ใช้แล้ว</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statLeft" style="color:#c77dff">0</div>
+      <div class="stat-label">เหลืออยู่</div>
+    </div>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <button class="btn-back" onclick="location.href='index.html'">🎲 กลับไปสุ่มคูปอง</button>
+</div>
+<script>
+const STORAGE_KEY='lovecoupons_v1';
+const coupons=[
+  {emoji:'🎬',title:'พาไปดูหนัง'},{emoji:'🍣',title:'พาไปกินของอร่อย'},
+  {emoji:'🫂',title:'กอดฟรี 1 ครั้ง'},{emoji:'✈️',title:'พาไปเที่ยว'},
+  {emoji:'🛍️',title:'ซื้อของให้ 1 ชิ้น'},{emoji:'🥘',title:'ไปกินชาบู'},
+  {emoji:'💅',title:'ตามใจ 1 วัน'},{emoji:'🔥',title:'ปิ้งย่างร้านโปรด'},
+  {emoji:'💆',title:'หายงอน'},{emoji:'☕',title:'ไปคาเฟ่'},
+  {emoji:'😘',title:'คูปอง Kiss'},{emoji:'🌟',title:'อยากได้อะไรขอมา'},
+  {emoji:'🎮',title:'เล่นเกมด้วยกัน'},{emoji:'🍰',title:'ทำอาหารให้กิน'},
+  {emoji:'💌',title:'เป็นทาสน้อย 1 วัน'},
+];
+let state={remaining:coupons.map((_,i)=>i),history:[],current:null};
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+function load(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)state=JSON.parse(s);}catch(e){}}
+function markUsed(i){
+  if(state.history[i].used)return;
+  state.history[i].used=true;save();render();
+}
+function render(){
+  const list=document.getElementById('historyList');
+  const total=state.history.length;
+  const used=state.history.filter(h=>h.used).length;
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statUsed').textContent=used;
+  document.getElementById('statLeft').textContent=15-state.history.length+(state.history.filter(h=>!h.used).length===0?0:state.history.filter(h=>!h.used).length)-used;
+  // remaining = not yet drawn + drawn but not used
+  document.getElementById('statLeft').textContent=state.remaining.length+(total-used);
+  list.innerHTML='';
+  if(!total){
+    list.innerHTML='<div class="empty"><div>🎁</div>ยังไม่มีคูปองที่สุ่ม<br>กลับไปสุ่มเลย!</div>';return;
+  }
+  [...state.history].reverse().forEach((entry,ri)=>{
+    const realIdx=state.history.length-1-ri;
+    const c=coupons[entry.idx];
+    const item=document.createElement('div');
+    item.className='history-item'+(entry.used?' used-item':'');
+    item.innerHTML=`
+      <div class="history-emoji">${c.emoji}</div>
+      <div class="history-info">
+        <div class="history-name">${c.title}</div>
+        <div class="history-date">📅 ${entry.date}</div>
+      </div>
+      <button class="used-badge ${entry.used?'is-used':'not-used'}" onclick="${entry.used?'':'markUsed('+realIdx+')'}">
+        ${entry.used?'✓ ใช้แล้ว':'ใช้แล้ว?'}
+      </button>`;
+    list.appendChild(item);
+  });
+}
+load();render();
+</script>
+</body>
+</html>
