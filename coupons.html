@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎀 Love Coupons</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --pink:#ff6b9d;--purple:#c77dff;--mint:#06d6a0;--blue:#4cc9f0;--orange:#ff9f43;--coral:#ff6b6b;--yellow:#f59e0b; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Kanit',sans-serif;background:linear-gradient(135deg,#ffe0f0 0%,#e8d5ff 30%,#d0f0ff 60%,#ffd6e0 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 20px;overflow-x:hidden;}
+body::before{content:'💖 🌸 ✨ 💕 🌷 💝 ⭐ 🦋 💗 🌺 ✨ 💖';position:fixed;top:-20px;left:0;width:100%;font-size:22px;letter-spacing:30px;animation:floatDown 12s linear infinite;opacity:0.25;z-index:0;white-space:nowrap;pointer-events:none;}
+@keyframes floatDown{0%{transform:translateY(-30px)}100%{transform:translateY(110vh)}}
+.title-area{text-align:center;margin-bottom:30px;position:relative;z-index:1;}
+.title-area h1{font-size:clamp(2rem,8vw,3.5rem);font-weight:900;background:linear-gradient(135deg,#ff6b9d,#c77dff,#4cc9f0,#ff6b9d);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite;line-height:1.1;}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.subtitle{font-size:1rem;color:#c77dff;margin-top:6px;font-weight:500;font-family:'Mitr',sans-serif;}
+.coupon-box{width:100%;max-width:480px;position:relative;z-index:1;}
+.mystery-card{background:linear-gradient(145deg,#ff6b9d,#c77dff);border-radius:24px;padding:5px;margin-bottom:24px;box-shadow:0 20px 60px rgba(255,107,157,0.4),0 0 0 3px white;animation:cardFloat 3s ease-in-out infinite;}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mystery-inner{background:white;border-radius:20px;overflow:hidden;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.mystery-front{padding:40px 30px;text-align:center;width:100%;}
+.mystery-emoji{font-size:5rem;animation:wiggle 1.5s ease-in-out infinite;display:block;margin-bottom:12px;}
+@keyframes wiggle{0%,100%{transform:rotate(-5deg) scale(1)}50%{transform:rotate(5deg) scale(1.1)}}
+.mystery-text{font-size:1.3rem;color:#c77dff;font-weight:700;}
+.revealed-coupon{width:100%;display:none;}
+.coupon-header{padding:20px 25px 15px;display:flex;align-items:flex-start;gap:15px;width:100%;}
+.coupon-emoji-big{font-size:3.5rem;flex-shrink:0;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+@keyframes popIn{0%{transform:scale(0) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.coupon-label{font-size:0.65rem;font-family:'Mitr',sans-serif;letter-spacing:2px;color:#aaa;text-transform:uppercase;margin-bottom:4px;}
+.coupon-title{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;line-height:1.1;color:#333;}
+.coupon-desc{font-size:0.85rem;color:#888;margin-top:6px;font-family:'Mitr',sans-serif;line-height:1.4;}
+.coupon-footer{width:100%;border-top:2px dashed #f0f0f0;padding:12px 25px;display:flex;align-items:center;justify-content:space-between;margin-top:5px;}
+.coupon-tag{font-size:0.75rem;padding:4px 12px;border-radius:20px;font-weight:600;font-family:'Mitr',sans-serif;}
+.coupon-barcode{font-size:0.65rem;color:#ccc;letter-spacing:4px;font-family:monospace;}
+.btn-spin{width:100%;padding:18px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.3rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b9d,#c77dff);color:white;box-shadow:0 10px 30px rgba(255,107,157,0.4);transition:all 0.2s;position:relative;overflow:hidden;}
+.btn-spin:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(255,107,157,0.5);}
+.btn-spin:active{transform:scale(0.97);}
+.btn-spin::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.2),transparent);border-radius:inherit;}
+.btn-outline{width:100%;padding:14px;border:2.5px solid #ff6b9d;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:600;cursor:pointer;background:white;color:#ff6b9d;transition:all 0.2s;margin-top:12px;display:none;}
+.btn-outline:hover{background:#fff0f6;transform:translateY(-2px);}
+.btn-outline.show{display:block;}
+.btn-row{display:flex;gap:10px;margin-top:12px;}
+.btn-row .btn-secondary{flex:1;padding:14px;border:2.5px solid #c77dff;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:white;color:#c77dff;transition:all 0.2s;}
+.btn-row .btn-secondary:hover{background:#f5eeff;transform:translateY(-2px);}
+.all-used{text-align:center;padding:20px;color:#c77dff;font-size:1rem;font-family:'Mitr',sans-serif;display:none;}
+.reset-link{background:none;border:none;color:#ff6b9d;font-size:0.9rem;cursor:pointer;font-family:'Mitr',sans-serif;text-decoration:underline;margin-top:8px;display:block;}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden;}
+.confetti-piece{position:absolute;animation:confettiFall 1.5s ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:white;padding:12px 24px;border-radius:30px;font-family:'Mitr',sans-serif;font-size:0.9rem;opacity:0;transition:all 0.3s;z-index:200;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.theme-pink{color:#ff6b9d;background:#fff0f6;}
+.theme-purple{color:#c77dff;background:#f5eeff;}
+.theme-mint{color:#06d6a0;background:#edfff8;}
+.theme-blue{color:#4cc9f0;background:#eafaff;}
+.theme-orange{color:#ff9f43;background:#fff5eb;}
+.theme-coral{color:#ff6b6b;background:#fff0f0;}
+.theme-yellow{color:#f59e0b;background:#fffbeb;}
+</style>
+</head>
+<body>
+<div class="confetti-container" id="confetti"></div>
+<div class="toast" id="toast"></div>
+<div class="title-area">
+  <h1>🎀 Love Coupons</h1>
+  <p class="subtitle">กดสุ่มแล้วรับคูปองความรัก 💕</p>
+</div>
+<div class="coupon-box">
+  <div class="mystery-card" id="mysteryCard">
+    <div class="mystery-inner">
+      <div class="mystery-front" id="mysteryFront">
+        <span class="mystery-emoji" id="mysteryEmoji">🎁</span>
+        <p class="mystery-text">กดสุ่มเพื่อรับคูปอง!</p>
+      </div>
+      <div class="revealed-coupon" id="revealedCoupon">
+        <div class="coupon-header">
+          <div class="coupon-emoji-big" id="revEmoji"></div>
+          <div>
+            <div class="coupon-label">LOVE COUPON ✨</div>
+            <div class="coupon-title" id="revTitle"></div>
+            <div class="coupon-desc" id="revDesc"></div>
+          </div>
+        </div>
+        <div class="coupon-footer">
+          <span class="coupon-tag" id="revTag"></span>
+          <span class="coupon-barcode">| || ||| | ||</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn-spin" id="spinBtn" onclick="spinCoupon()">🎲 สุ่มคูปอง!</button>
+  <button class="btn-outline" id="againBtn" onclick="resetCard()">🔄 ซ่อนคูปอง</button>
+  <div class="all-used" id="allUsed">
+    <div style="font-size:2rem">🎉</div>
+    <div>ใช้คูปองครบแล้ว!</div>
+    <div style="font-size:0.8rem;color:#aaa;margin-top:4px">คู่รักสายรักสุด~</div>
+    <button class="reset-link" onclick="resetAll()">รีเซ็ตใหม่ทั้งหมด</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="shareLink()">📤 Share ให้แฟน</button>
+    <button class="btn-secondary" onclick="location.href='history.html'">📋 ดูประวัติ</button>
+  </div>
+  <button style="width:100%;padding:13px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.7);color:#aaa;margin-top:10px;transition:all 0.2s;" onclick="location.href='index.html'">← หน้าหลัก</button>
+</div>
+<script>
+const STORAGE_KEY='lovecoupons_v1';
+const coupons=[
+  {emoji:'🎬',title:'พาไปดูหนัง',desc:'เลือกหนังได้เลย ไม่มีบ่น! 🍿',color:'theme-coral'},
+  {emoji:'🍣',title:'พาไปกินของอร่อย',desc:'เลือกร้านได้เองเลยนะ 😋',color:'theme-mint'},
+  {emoji:'🫂',title:'กอดฟรี 1 ครั้ง',desc:'กอดได้นานเท่าที่อยากได้เลย 🥰',color:'theme-pink'},
+  {emoji:'✈️',title:'พาไปเที่ยว',desc:'เลือกที่เที่ยวได้เลย จัดให้ทุกอย่าง 🗺️',color:'theme-blue'},
+  {emoji:'🛍️',title:'ซื้อของให้ 1 ชิ้น',desc:'อยากได้อะไรก็บอก (ราคาสมเหตุสมผล 😅)',color:'theme-purple'},
+  {emoji:'🥘',title:'ไปกินชาบู',desc:'เลือกร้านได้เลย สั่งเพิ่มได้ไม่จำกัด 🍲',color:'theme-orange'},
+  {emoji:'💅',title:'ตามใจ 1 วัน',desc:'วันนี้อยากทำอะไรก็ได้เลย ตามใจเต็มที่ 👑',color:'theme-pink'},
+  {emoji:'🔥',title:'ปิ้งย่างร้านโปรด',desc:'เลือกร้านได้เอง ชิลล์ด้วยกัน 🍖',color:'theme-coral'},
+  {emoji:'💆',title:'หายงอน',desc:'ฉันหายงอนทันทีไม่มีเงื่อนไข 🕊️',color:'theme-mint'},
+  {emoji:'☕',title:'ไปคาเฟ่',desc:'เลือกคาเฟ่น่ารักด้วยกัน 📸',color:'theme-yellow'},
+  {emoji:'😘',title:'คูปอง Kiss',desc:'แลกได้เมื่อไหร่ก็ได้ xoxo 💋',color:'theme-pink'},
+  {emoji:'🌟',title:'อยากได้อะไรขอมา',desc:'ให้ได้หมดทุกอย่างเลย (ในขอบเขต 😂)',color:'theme-purple'},
+  {emoji:'🎮',title:'เล่นเกมด้วยกัน',desc:'ไม่ว่าจะเกมอะไร เล่นด้วยกันคืนนี้ 🕹️',color:'theme-blue'},
+  {emoji:'🍰',title:'ทำอาหารให้กิน',desc:'เมนูอะไรก็ได้ที่อยากกิน ทำให้เลย 👨‍🍳',color:'theme-orange'},
+  {emoji:'💌',title:'เป็นทาสน้อย 1 วัน',desc:'สั่งได้ทุกอย่าง ฉันทำให้หมด 🐾',color:'theme-coral'},
+];
+const spinEmojis=['🎁','💝','🎀','💖','🌟','✨','💕','🎊','🎉','💗'];
+const themeColors={'theme-pink':'#ff6b9d','theme-purple':'#c77dff','theme-mint':'#06d6a0','theme-blue':'#4cc9f0','theme-orange':'#ff9f43','theme-coral':'#ff6b6b','theme-yellow':'#f59e0b'};
+let state={remaining:coupons.map((_,i)=>i),history:[],current:null};
+let isSpinning=false;
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+function load(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)state=JSON.parse(s);}catch(e){}}
+function renderUI(){
+  const spinBtn=document.getElementById('spinBtn');
+  const againBtn=document.getElementById('againBtn');
+  const allUsed=document.getElementById('allUsed');
+  if(state.remaining.length===0){spinBtn.style.display='none';allUsed.style.display='block';againBtn.classList.remove('show');}
+  else{spinBtn.style.display='block';spinBtn.disabled=false;spinBtn.style.opacity='1';allUsed.style.display='none';againBtn.className='btn-outline'+(state.current!==null?' show':'');}
+  if(state.current!==null){
+    document.getElementById('mysteryFront').style.display='none';
+    showCoupon(coupons[state.current]);
+    const rev=document.getElementById('revealedCoupon');
+    rev.style.display='flex';rev.style.flexDirection='column';
+  }
+}
+function showCoupon(c){
+  document.getElementById('revEmoji').textContent=c.emoji;
+  document.getElementById('revTitle').textContent=c.title;
+  document.getElementById('revDesc').textContent=c.desc;
+  const tag=document.getElementById('revTag');
+  tag.textContent='💖 LOVE 100%';tag.className='coupon-tag '+c.color;
+  document.getElementById('mysteryCard').style.background=`linear-gradient(145deg,${themeColors[c.color]},#c77dff)`;
+}
+function spinCoupon(){
+  if(isSpinning||!state.remaining.length)return;
+  isSpinning=true;
+  const card=document.getElementById('mysteryCard');
+  const front=document.getElementById('mysteryFront');
+  const emojiEl=document.getElementById('mysteryEmoji');
+  const revealed=document.getElementById('revealedCoupon');
+  const spinBtn=document.getElementById('spinBtn');
+  revealed.style.display='none';front.style.display='block';
+  spinBtn.disabled=true;spinBtn.style.opacity='0.6';
+  document.getElementById('againBtn').classList.remove('show');
+  card.classList.add('spinning');
+  let i=0;
+  const interval=setInterval(()=>{emojiEl.textContent=spinEmojis[i++%spinEmojis.length];},80);
+  setTimeout(()=>{
+    clearInterval(interval);card.classList.remove('spinning');
+    const pick=Math.floor(Math.random()*state.remaining.length);
+    const idx=state.remaining.splice(pick,1)[0];
+    state.current=idx;
+    const now=new Date();
+    const date=now.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
+    state.history.push({idx,used:false,date});
+    save();
+    front.style.display='none';
+    showCoupon(coupons[idx]);
+    revealed.style.display='flex';revealed.style.flexDirection='column';
+    launchConfetti();renderUI();isSpinning=false;
+  },1200);
+}
+function resetCard(){
+  state.current=null;save();
+  document.getElementById('revealedCoupon').style.display='none';
+  document.getElementById('mysteryFront').style.display='block';
+  document.getElementById('mysteryEmoji').textContent='🎁';
+  document.getElementById('mysteryCard').style.background='linear-gradient(145deg,#ff6b9d,#c77dff)';
+  renderUI();
+}
+function resetAll(){
+  if(!confirm('รีเซ็ตทั้งหมด? ประวัติจะหายไปด้วยนะ 🥺'))return;
+  state={remaining:coupons.map((_,i)=>i),history:[],current:null};save();
+  document.getElementById('mysteryFront').style.display='block';
+  document.getElementById('revealedCoupon').style.display='none';
+  document.getElementById('mysteryEmoji').textContent='🎁';
+  document.getElementById('mysteryCard').style.background='linear-gradient(145deg,#ff6b9d,#c77dff)';
+  renderUI();
+}
+function shareLink(){
+  const idx=state.current;
+  if(idx===null){showToast('สุ่มคูปองก่อนนะ 🎁');return;}
+  const url=location.origin+location.pathname+'#c-'+idx;
+  if(navigator.share){navigator.share({title:'Love Coupon 🎀',text:'ดูคูปองที่ฉันได้!',url});}
+  else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>showToast('Copy: '+url));}
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function launchConfetti(){
+  const container=document.getElementById('confetti');
+  const colors=['#ff6b9d','#c77dff','#4cc9f0','#ffd60a','#06d6a0','#ff9f43','#ff6b6b'];
+  container.innerHTML='';
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1+Math.random()*1.5}s;animation-delay:${Math.random()*.4}s;`;
+    container.appendChild(p);
+  }
+  setTimeout(()=>container.innerHTML='',3000);
+}
+load();
+// load from URL hash
+const hash=location.hash;
+if(hash.startsWith('#c-')){
+  const idx=parseInt(hash.slice(3));
+  if(!isNaN(idx)&&idx>=0&&idx<coupons.length){
+    state.current=idx;
+    document.getElementById('mysteryFront').style.display='none';
+    showCoupon(coupons[idx]);
+    const rev=document.getElementById('revealedCoupon');
+    rev.style.display='flex';rev.style.flexDirection='column';
+  }
+}
+renderUI();
+</script>
+</body>
+</html>

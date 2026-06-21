@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💝 Love Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Kanit',sans-serif;background:linear-gradient(135deg,#ffe0f0 0%,#e8d5ff 30%,#d0f0ff 60%,#ffd6e0 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 20px 40px;overflow-x:hidden;}
+body::before{content:'💝 🌸 ✨ 💡 💖 🌟 🧠 💗';position:fixed;top:-20px;left:0;width:100%;font-size:22px;letter-spacing:35px;animation:floatDown 14s linear infinite;opacity:0.2;z-index:0;white-space:nowrap;pointer-events:none;}
+@keyframes floatDown{0%{transform:translateY(-30px)}100%{transform:translateY(110vh)}}
+.title-area{text-align:center;margin-bottom:24px;position:relative;z-index:1;}
+.title-area h1{font-size:clamp(1.8rem,7vw,2.8rem);font-weight:900;background:linear-gradient(135deg,#06d6a0,#4cc9f0,#c77dff);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite;}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.subtitle{font-size:0.95rem;color:#06d6a0;margin-top:6px;font-family:'Mitr',sans-serif;}
+.box{width:100%;max-width:480px;position:relative;z-index:1;}
+.progress-wrap{margin-bottom:16px;}
+.progress-bar-bg{background:rgba(255,255,255,0.6);border-radius:10px;height:8px;overflow:hidden;}
+.progress-bar{background:linear-gradient(90deg,#06d6a0,#4cc9f0);height:100%;border-radius:10px;transition:width 0.4s ease;}
+.progress-label{font-size:0.8rem;font-family:'Mitr',sans-serif;color:#aaa;text-align:right;margin-top:5px;}
+.question-card{background:white;border-radius:24px;padding:26px 22px;margin-bottom:16px;box-shadow:0 12px 40px rgba(6,214,160,0.15),0 0 0 3px white;animation:cardFloat 3s ease-in-out infinite;}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.q-number{font-size:0.7rem;font-family:'Mitr',sans-serif;color:#06d6a0;font-weight:700;letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;}
+.q-emoji{font-size:2.5rem;display:block;margin-bottom:12px;}
+.q-text{font-size:clamp(1rem,3.8vw,1.25rem);font-weight:700;color:#333;line-height:1.4;}
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+.choice-btn{padding:15px 18px;border-radius:16px;border:2.5px solid #e0f7f1;background:#f7fffe;font-family:'Kanit',sans-serif;font-size:0.95rem;font-weight:600;color:#333;cursor:pointer;transition:all 0.2s;text-align:left;line-height:1.3;}
+.choice-btn:hover{border-color:#06d6a0;background:#edfff8;transform:translateX(4px);}
+.choice-btn.selected{border-color:#06d6a0;background:#06d6a0;color:white;}
+.choice-btn.correct{border-color:#06d6a0;background:#edfff8;color:#06d6a0;}
+.choice-btn.wrong{border-color:#ff6b6b;background:#fff0f0;color:#ff6b6b;}
+.insight-card{display:none;background:linear-gradient(135deg,#edfff8,#eafaff);border-radius:20px;padding:20px;margin-top:14px;border:2px solid #06d6a0;}
+.insight-emoji{font-size:2rem;margin-bottom:8px;}
+.insight-title{font-size:1rem;font-weight:700;color:#06d6a0;margin-bottom:4px;}
+.insight-text{font-size:0.88rem;font-family:'Mitr',sans-serif;color:#555;line-height:1.5;}
+.score-card{display:none;background:white;border-radius:24px;padding:30px 22px;margin-bottom:16px;box-shadow:0 12px 40px rgba(6,214,160,0.2);text-align:center;}
+.score-big{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,#06d6a0,#4cc9f0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.score-label{font-size:1rem;color:#aaa;font-family:'Mitr',sans-serif;margin-top:4px;}
+.score-msg{font-size:1.1rem;font-weight:700;color:#333;margin-top:14px;line-height:1.4;}
+.score-sub{font-size:0.85rem;color:#aaa;font-family:'Mitr',sans-serif;margin-top:6px;}
+.btn-next{width:100%;padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#06d6a0,#4cc9f0);color:white;box-shadow:0 10px 30px rgba(6,214,160,0.35);transition:all 0.2s;margin-bottom:10px;}
+.btn-next:hover{transform:translateY(-3px);}
+.btn-restart{width:100%;padding:14px;border:2.5px solid #06d6a0;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:white;color:#06d6a0;transition:all 0.2s;margin-bottom:10px;}
+.btn-restart:hover{background:#edfff8;transform:translateY(-2px);}
+.btn-share{width:100%;padding:14px;border:2.5px solid #4cc9f0;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:white;color:#4cc9f0;transition:all 0.2s;margin-bottom:10px;}
+.btn-share:hover{background:#eafaff;transform:translateY(-2px);}
+.btn-back{width:100%;padding:13px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.7);color:#aaa;margin-top:4px;transition:all 0.2s;}
+.btn-back:hover{background:rgba(255,255,255,0.9);}
+.start-card{background:white;border-radius:24px;padding:36px 22px;margin-bottom:18px;box-shadow:0 12px 40px rgba(6,214,160,0.15);text-align:center;}
+.start-emoji{font-size:4rem;display:block;margin-bottom:14px;}
+.start-title{font-size:1.2rem;font-weight:700;color:#333;margin-bottom:8px;}
+.start-desc{font-size:0.88rem;font-family:'Mitr',sans-serif;color:#aaa;line-height:1.5;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:white;padding:12px 24px;border-radius:30px;font-family:'Mitr',sans-serif;font-size:0.9rem;opacity:0;transition:all 0.3s;z-index:200;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden;}
+.confetti-piece{position:absolute;animation:confettiFall 1.5s ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="confetti-container" id="confetti"></div>
+<div class="toast" id="toast"></div>
+<div class="title-area">
+  <h1>💝 Love Quiz</h1>
+  <p class="subtitle">ค้นพบตัวเองและความสัมพันธ์ 💡</p>
+</div>
+<div class="box" id="mainBox">
+
+  <div class="start-card" id="startCard">
+    <span class="start-emoji">💝</span>
+    <div class="start-title">Love Quiz สำหรับคู่รัก</div>
+    <div class="start-desc">ตอบคำถามเกี่ยวกับความรัก แล้วดู insight สนุกๆ เกี่ยวกับตัวเองกับแฟน!<br><br>ทั้งสองคนลองตอบแยกกัน แล้วเอาคำตอบมาคุยกันว่าต่างกันไหม 💕</div>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 0</div>
+  </div>
+
+  <div class="question-card" id="questionCard" style="display:none">
+    <div class="q-number" id="qNumber"></div>
+    <span class="q-emoji" id="qEmoji"></span>
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choicesBox"></div>
+    <div class="insight-card" id="insightCard">
+      <div class="insight-emoji" id="insightEmoji"></div>
+      <div class="insight-title" id="insightTitle"></div>
+      <div class="insight-text" id="insightText"></div>
+    </div>
+  </div>
+
+  <div class="score-card" id="scoreCard">
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-label">คะแนนของคุณ</div>
+    <div class="score-msg" id="scoreMsg"></div>
+    <div class="score-sub" id="scoreSub"></div>
+  </div>
+
+  <button class="btn-next" id="btnAction" onclick="handleAction()">💝 เริ่ม Quiz เลย!</button>
+  <button class="btn-share" onclick="shareLink()" id="btnShare" style="display:none">📤 Share ให้แฟนทำด้วย</button>
+  <button class="btn-restart" onclick="restart()" id="btnRestart" style="display:none">🔄 เริ่มใหม่</button>
+  <button class="btn-back" onclick="location.href='index.html'">← หน้าหลัก</button>
+
+</div>
+<script>
+const questions=[
+  {
+    emoji:'💑',
+    q:'คุณชอบ date แบบไหนมากกว่า?',
+    choices:['ออกไปข้างนอก ร้านอาหาร หนัง ช้อปปิ้ง 🌆','อยู่บ้าน ดูหนัง กินขนม ชิลล์ 🛋️','ผจญภัย ท่องเที่ยว ธรรมชาติ 🌿','ทำกิจกรรมสนุกๆ เกมส์ กีฬา ⚡'],
+    insights:['คุณชอบความตื่นเต้นและออกไปใช้ชีวิตข้างนอก! ชอบบรรยากาศ ชอบของอร่อย','คุณเป็นคนชิลล์ รักความสุขเรียบง่าย ความอบอุ่นในบ้านคือสิ่งที่ดีที่สุด','คุณเป็นนักผจญภัย ชอบสร้างความทรงจำใหม่ๆ ท่องโลกด้วยกัน','คุณมีพลังงานสูง ชอบความสนุกและ active! ความสัมพันธ์ต้องมีชีวิตชีวา'],
+    insightEmojis:['🌆','🛋️','🌿','⚡'],
+    insightTitles:['นักสำรวจเมือง 🏙️','เจ้าของรังอบอุ่น 🏠','นักผจญภัย 🌄','พลังงานไม่มีวันหมด ⚡'],
+  },
+  {
+    emoji:'💌',
+    q:'คุณแสดงความรักแบบไหนมากที่สุด?',
+    choices:['บอกรักด้วยคำพูดทุกวัน 💬','ทำสิ่งต่างๆ ให้ ดูแลเอาใจใส่ 🛠️','ให้ของขวัญ ของที่ระลึก 🎁','ใช้เวลาอยู่ด้วยกัน 🫂'],
+    insights:['คุณเป็น Words of Affirmation! รักการบอกรัก ชมและให้กำลังใจ','คุณเป็น Acts of Service! แสดงรักผ่านการกระทำ ชอบดูแลคนที่รัก','คุณเป็น Gift Giving! รักการให้และรับของขวัญที่มีความหมาย','คุณเป็น Quality Time! ให้ความสำคัญกับเวลาที่ใช้ด้วยกัน'],
+    insightEmojis:['💬','🛠️','🎁','⏰'],
+    insightTitles:['นักพูดรัก 💬','นักดูแล 🛠️','นักให้ 🎁','นักเวลาคุณภาพ ⏰'],
+  },
+  {
+    emoji:'😤',
+    q:'เวลาเกิดปัญหากับแฟน คุณเป็นแบบไหน?',
+    choices:['พูดตรงๆ ทันที อย่าให้ค้างคา 🗣️','ใจเย็นก่อน แล้วค่อยคุย 🧘','งอนเงียบ รอให้อีกฝ่ายมาง้อ 🙈','เขียนหรือส่งข้อความแทนพูด 📱'],
+    insights:['คุณตรงไปตรงมา ไม่อมทุกข์ ปัญหาจบเร็ว แต่บางทีต้องฟังอีกฝ่ายมากขึ้น','คุณ mature มากๆ รู้จักควบคุมอารมณ์ก่อนสื่อสาร ทำให้ผลลัพธ์ดีกว่า','คุณต้องการให้อีกฝ่ายรู้ว่าทำให้เจ็บปวด แต่ลองบอกตรงๆ อาจดีกว่า','คุณสื่อสารได้ดีผ่านตัวอักษร แต่บางทีการคุยหน้ากันก็สำคัญมาก'],
+    insightEmojis:['🗣️','🧘','🙈','📱'],
+    insightTitles:['นักสื่อสารตรงๆ 🗣️','นักคิดก่อนพูด 🧘','ราชาแห่งการงอน 🙈','นักเขียนความรู้สึก 📱'],
+  },
+  {
+    emoji:'🌙',
+    q:'คุณชอบ quality time ด้วยกันช่วงไหน?',
+    choices:['ตอนเช้า กินข้าว กาแฟด้วยกัน ☀️','กลางวัน ออกไปข้างนอกด้วยกัน 🌤️','ตอนเย็น กินข้าวเย็น คุยกัน 🌅','ดึกๆ ดูหนัง นอนคุยกัน 🌙'],
+    insights:['คุณเป็น morning person! ชอบเริ่มวันดีๆ กับคนที่รัก พลังงานดีตอนเช้า','คุณชอบออกไปใช้ชีวิต ตอนกลางวันมีพลัง ชอบทำกิจกรรมด้วยกัน','คุณชอบผ่อนคลายตอนเย็น ชอบสรุปวันด้วยกัน มื้อเย็นคือเวลาพิเศษ','คุณเป็น night owl! ตอนดึกคือเวลาที่สนิทกันมากที่สุด คุยได้ไม่รู้จบ'],
+    insightEmojis:['☀️','🌤️','🌅','🌙'],
+    insightTitles:['คนชอบเช้า ☀️','นักผจญภัยกลางวัน 🌤️','นักดูพระอาทิตย์ตก 🌅','นักดึก 🌙'],
+  },
+  {
+    emoji:'💑',
+    q:'สิ่งที่คุณ value ในความสัมพันธ์มากที่สุดคืออะไร?',
+    choices:['ความไว้ใจและซื่อสัตย์ 🔒','การสื่อสารที่ดี 💬','การสนับสนุนกันและกัน 💪','ความสนุกและหัวเราะด้วยกัน 😂'],
+    insights:['คุณให้ความสำคัญกับความซื่อสัตย์มากที่สุด ความไว้ใจคือรากฐานของความสัมพันธ์','คุณเชื่อว่าการสื่อสารแก้ปัญหาได้ทุกอย่าง คุยกันตรงๆ ดีกว่าสะสม','คุณชอบเป็นทีมกับแฟน ฝ่าฟันด้วยกัน support กันในทุกด้าน','คุณเชื่อว่าคู่รักต้องเป็นเพื่อนที่ดีกัน ชีวิตต้องมีเสียงหัวเราะ'],
+    insightEmojis:['🔒','💬','💪','😂'],
+    insightTitles:['นักรักษาความไว้ใจ 🔒','นักสื่อสาร 💬','ทีมเวิร์คสูง 💪','นักหัวเราะ 😂'],
+  },
+  {
+    emoji:'🎉',
+    q:'คุณฉลองความสำเร็จของแฟนยังไง?',
+    choices:['ชมและบอกว่าภูมิใจมากแค่ไหน 🥹','พาไปกินอาหารอร่อยหรือทำอะไรพิเศษ 🍽️','ซื้อของขวัญเล็กๆ น้อยๆ 🎁','แค่อยู่เคียงข้างและ hug แน่นๆ 🫂'],
+    insights:['คุณเป็นนักเชียร์ตัวยง! คำพูดของคุณทำให้แฟนรู้สึกมีคุณค่ามากที่สุด','คุณแสดงออกผ่านการกระทำ! ชอบทำสิ่งพิเศษเพื่อให้คนที่รักรู้สึกว่าพิเศษ','คุณมีความคิดสร้างสรรค์ในการให้ของขวัญ ของเล็กๆ แต่มีความหมายมาก','คุณรู้ว่าบางทีไม่ต้องพูดอะไรมาก แค่อยู่ด้วยกันก็พอแล้ว'],
+    insightEmojis:['🥹','🍽️','🎁','🫂'],
+    insightTitles:['นักเชียร์มืออาชีพ 🥹','นักจัดซัปไพรส์ 🎉','นักให้ของขวัญ 🎁','นักกอด 🫂'],
+  },
+  {
+    emoji:'🏠',
+    q:'ฝันถึงชีวิตอนาคตร่วมกันยังไง?',
+    choices:['บ้านเล็กๆ แต่อบอุ่น ชีวิตเรียบง่าย 🏡','คอนโดในเมือง ใกล้ทุกอย่าง ✨','ท่องเที่ยวไปเรื่อยๆ ไม่ต้องอยู่ที่เดิม ✈️','ธรรมชาติ ต่างจังหวัด สงบ 🌳'],
+    insights:['คุณชอบความอบอุ่นและ cozy home life! ความสุขอยู่ที่บ้านและคนข้างๆ','คุณชอบ urban lifestyle! ชอบความสะดวก ทันสมัย และโอกาสต่างๆ ในเมือง','คุณเป็นนักเดินทาง! ชีวิตต้องมีการค้นพบสิ่งใหม่ๆ ตลอดเวลา','คุณชอบความสงบ ธรรมชาติ และชีวิตที่ไม่เร่งรีบ slow life คือสิ่งที่ต้องการ'],
+    insightEmojis:['🏡','✨','✈️','🌳'],
+    insightTitles:['นักรักบ้าน 🏡','Urban Lover ✨','นักเดินทาง ✈️','Slow Life Champion 🌳'],
+  },
+  {
+    emoji:'😴',
+    q:'คุณต้องการ personal space มากแค่ไหน?',
+    choices:['น้อยมาก! อยากอยู่ด้วยกันตลอด 🥰','ปานกลาง บางเวลาอยากได้พื้นที่ตัวเอง 🧘','ค่อนข้างมาก ต้องการเวลาคนเดียว 💆','ขึ้นอยู่กับอารมณ์ each day is different 🎭'],
+    insights:['คุณเป็นคน clingy ในแบบที่น่ารัก! ชอบความใกล้ชิด รักการมีคนอยู่เคียงข้าง','คุณ balance ดีมาก! รู้จักรักษา space ทั้งของตัวเองและแฟน สุขภาพจิตดี','คุณเป็นคนที่ต้องการเวลา recharge ตัวเอง และนั่นก็โอเคมากๆ ทุกคนต้องการ','คุณ flexible มาก ปรับตัวได้ตามสถานการณ์ ไม่ fixed กับ routine เดิม'],
+    insightEmojis:['🥰','🧘','💆','🎭'],
+    insightTitles:['นักรักใกล้ชิด 🥰','นักสมดุล 🧘','นักชาร์จพลังงาน 💆','นักปรับตัว 🎭'],
+  },
+  {
+    emoji:'🥰',
+    q:'คุณรักษาความสัมพันธ์ให้ดีด้วยวิธีไหน?',
+    choices:['เช็คอินหากัน ถามความรู้สึกสม่ำเสมอ 💬','ทำสิ่งเล็กๆ น้อยๆ เพื่อกัน ทุกวัน 🌸','แก้ปัญหาทุกอย่างก่อนนอน ไม่ค้างคา 🌙','ออกไปทำกิจกรรมใหม่ๆ ด้วยกัน 🌟'],
+    insights:['คุณดูแลความสัมพันธ์ด้วยการสื่อสาร! เช็คอินอารมณ์กันสม่ำเสมอทำให้สนิทขึ้น','คุณเชื่อว่า little things matter! ความรักอยู่ในสิ่งเล็กๆ ที่ทำทุกวัน','คุณไม่ชอบอมทุกข์ข้ามคืน แก้ปัญหาทันทีทำให้สัมพันธ์มั่นคงกว่า','คุณรักษาความตื่นเต้นในความสัมพันธ์ด้วยการสร้างประสบการณ์ใหม่ๆ'],
+    insightEmojis:['💬','🌸','🌙','🌟'],
+    insightTitles:['นักเช็คอินอารมณ์ 💬','นักรักเล็กๆ น้อยๆ 🌸','นักแก้ปัญหาก่อนนอน 🌙','นักสร้างความตื่นเต้น 🌟'],
+  },
+  {
+    emoji:'💪',
+    q:'เวลาแฟนเครียดหรือหดหู่ คุณทำอะไร?',
+    choices:['ฟังและปล่อยให้ระบาย ไม่ตัดสิน 👂','หาวิธีแก้ปัญหาให้ทันที 💡','อยู่เคียงข้าง กอด ไม่ต้องพูดอะไรมาก 🫂','พาออกไปข้างนอก เปลี่ยนบรรยากาศ 🌈'],
+    insights:['คุณเป็น emotional support ที่ดีมากๆ! รู้ว่าบางทีคนต้องการแค่คนฟัง ไม่ใช่คำแนะนำ','คุณเป็น problem-solver! รักคือการช่วยแก้ปัญหา แต่บางทีอีกฝ่ายต้องการแค่ฟัง','คุณรู้ว่า physical presence สำคัญมาก! ความอบอุ่นจากการอยู่ใกล้ๆ รักษาหัวใจได้','คุณรู้ว่าการเปลี่ยนบรรยากาศช่วยได้! Distraction ที่ดีช่วยให้จิตใจดีขึ้นได้'],
+    insightEmojis:['👂','💡','🫂','🌈'],
+    insightTitles:['นักฟัง 👂','นักแก้ปัญหา 💡','นักกอด 🫂','นักเปลี่ยนบรรยากาศ 🌈'],
+  },
+];
+
+const scoreMessages=[
+  {min:0,max:3,msg:'คุณเพิ่งเริ่มเรียนรู้ตัวเอง 🌱',sub:'ลองคุยกับแฟนเกี่ยวกับคำตอบของคุณ อาจได้เรียนรู้อะไรใหม่ๆ!'},
+  {min:4,max:6,msg:'คุณรู้จักตัวเองดีพอสมควร 💫',sub:'ความสัมพันธ์ของคุณมีพื้นฐานที่ดี ลองแชร์ quiz นี้ให้แฟนทำด้วย!'},
+  {min:7,max:9,msg:'คุณเข้าใจตัวเองและความรักได้ดีมาก 💖',sub:'แชร์ผลให้แฟนดู แล้วคุยกันว่าคำตอบต่างกันไหม มันจะสนุกมาก!'},
+  {min:10,max:10,msg:'Love Expert! คุณเข้าใจความรักลึกมาก ✨',sub:'คุณคือ relationship goals! แฟนโชคดีมากที่มีคุณอยู่ด้วย 💕'},
+];
+
+let currentQ=0;
+let score=0;
+let answered=[];
+let started=false;
+let lastChoice=null;
+
+function handleAction(){
+  if(!started){
+    started=true;
+    document.getElementById('startCard').style.display='none';
+    document.getElementById('progressWrap').style.display='block';
+    document.getElementById('questionCard').style.display='block';
+    document.getElementById('btnAction').textContent='▶ ถัดไป';
+    document.getElementById('btnAction').disabled=true;
+    document.getElementById('btnAction').style.opacity='0.4';
+    showQuestion(0);
+    return;
+  }
+  if(lastChoice===null)return;
+  currentQ++;
+  score++;
+  if(currentQ>=questions.length){showScore();return;}
+  showQuestion(currentQ);
+}
+
+function showQuestion(idx){
+  const q=questions[idx];
+  document.getElementById('qNumber').textContent='คำถามที่ '+(idx+1)+' / '+questions.length;
+  document.getElementById('qEmoji').textContent=q.emoji;
+  document.getElementById('qText').textContent=q.q;
+  const box=document.getElementById('choicesBox');
+  box.innerHTML='';
+  q.choices.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';
+    btn.textContent=c;
+    btn.onclick=()=>selectChoice(idx,i,btn);
+    box.appendChild(btn);
+  });
+  document.getElementById('insightCard').style.display='none';
+  document.getElementById('btnAction').disabled=true;
+  document.getElementById('btnAction').style.opacity='0.4';
+  lastChoice=null;
+  const pct=((idx)/questions.length)*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=idx+' / '+questions.length+' ตอบแล้ว';
+}
+
+function selectChoice(qIdx,choiceIdx,btn){
+  const q=questions[qIdx];
+  document.querySelectorAll('.choice-btn').forEach(b=>b.className='choice-btn');
+  btn.className='choice-btn selected';
+  lastChoice=choiceIdx;
+  answered[qIdx]=choiceIdx;
+  const insight=document.getElementById('insightCard');
+  document.getElementById('insightEmoji').textContent=q.insightEmojis[choiceIdx];
+  document.getElementById('insightTitle').textContent=q.insightTitles[choiceIdx];
+  document.getElementById('insightText').textContent=q.insights[choiceIdx];
+  insight.style.display='block';
+  document.getElementById('btnAction').disabled=false;
+  document.getElementById('btnAction').style.opacity='1';
+  if(currentQ===questions.length-1){
+    document.getElementById('btnAction').textContent='🎉 ดูผลลัพธ์!';
+  }
+}
+
+function showScore(){
+  document.getElementById('questionCard').style.display='none';
+  document.getElementById('progressWrap').style.display='none';
+  document.getElementById('scoreCard').style.display='block';
+  document.getElementById('btnAction').style.display='none';
+  document.getElementById('btnShare').style.display='block';
+  document.getElementById('btnRestart').style.display='block';
+  document.getElementById('scoreBig').textContent=score+'/'+questions.length;
+  const msg=scoreMessages.find(m=>score>=m.min&&score<=m.max)||scoreMessages[scoreMessages.length-1];
+  document.getElementById('scoreMsg').textContent=msg.msg;
+  document.getElementById('scoreSub').textContent=msg.sub;
+  document.getElementById('progressBar').style.width='100%';
+  document.getElementById('progressLabel').textContent=questions.length+' / '+questions.length+' ตอบแล้ว';
+  launchConfetti();
+}
+
+function restart(){
+  currentQ=0;score=0;answered=[];lastChoice=null;started=false;
+  document.getElementById('startCard').style.display='block';
+  document.getElementById('progressWrap').style.display='none';
+  document.getElementById('questionCard').style.display='none';
+  document.getElementById('scoreCard').style.display='none';
+  document.getElementById('btnAction').style.display='block';
+  document.getElementById('btnAction').textContent='💝 เริ่ม Quiz เลย!';
+  document.getElementById('btnAction').disabled=false;
+  document.getElementById('btnAction').style.opacity='1';
+  document.getElementById('btnShare').style.display='none';
+  document.getElementById('btnRestart').style.display='none';
+  document.getElementById('progressBar').style.width='0%';
+}
+
+function shareLink(){
+  const url=location.origin+location.pathname;
+  if(navigator.share){navigator.share({title:'Love Quiz 💝',text:'มาทำ Love Quiz ด้วยกัน แล้วเอาผลมาเปรียบกัน!',url});}
+  else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>showToast('Copy: '+url));}
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function launchConfetti(){
+  const container=document.getElementById('confetti');
+  const colors=['#06d6a0','#4cc9f0','#c77dff','#ff6b9d','#ffd60a'];
+  container.innerHTML='';
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1+Math.random()*1.5}s;animation-delay:${Math.random()*.3}s;`;
+    container.appendChild(p);
+  }
+  setTimeout(()=>container.innerHTML='',3000);
+}
+</script>
+</body>
+</html>

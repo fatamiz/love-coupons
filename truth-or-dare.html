@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💣 Truth or Dare</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Kanit',sans-serif;background:linear-gradient(135deg,#ffe0f0 0%,#e8d5ff 30%,#d0f0ff 60%,#ffd6e0 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 20px 40px;overflow-x:hidden;}
+body::before{content:'💣 ✨ 💕 🎭 💖 🌟 🎀 💗';position:fixed;top:-20px;left:0;width:100%;font-size:22px;letter-spacing:35px;animation:floatDown 14s linear infinite;opacity:0.2;z-index:0;white-space:nowrap;pointer-events:none;}
+@keyframes floatDown{0%{transform:translateY(-30px)}100%{transform:translateY(110vh)}}
+.title-area{text-align:center;margin-bottom:24px;position:relative;z-index:1;}
+.title-area h1{font-size:clamp(2rem,8vw,3rem);font-weight:900;background:linear-gradient(135deg,#c77dff,#ff6b9d,#4cc9f0);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite;}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.subtitle{font-size:0.95rem;color:#c77dff;margin-top:6px;font-family:'Mitr',sans-serif;}
+.box{width:100%;max-width:480px;position:relative;z-index:1;}
+.card-wrap{border-radius:28px;padding:5px;margin-bottom:22px;box-shadow:0 20px 60px rgba(199,125,255,0.35),0 0 0 3px white;animation:cardFloat 3s ease-in-out infinite;}
+.card-wrap.type-truth{background:linear-gradient(145deg,#c77dff,#4cc9f0);}
+.card-wrap.type-dare{background:linear-gradient(145deg,#ff6b9d,#ff9f43);}
+.card-wrap.type-idle{background:linear-gradient(145deg,#c77dff,#ff6b9d);}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.card-inner{background:white;border-radius:24px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;}
+.card-badge{font-size:0.75rem;font-family:'Mitr',sans-serif;letter-spacing:3px;font-weight:700;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:16px;}
+.badge-truth{background:#f5eeff;color:#c77dff;}
+.badge-dare{background:#fff0f6;color:#ff6b9d;}
+.card-big-emoji{font-size:4.5rem;margin-bottom:14px;display:block;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+@keyframes popIn{0%{transform:scale(0) rotate(-15deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.card-idle-text{font-size:1.2rem;color:#ccc;font-family:'Mitr',sans-serif;}
+.card-question{font-size:clamp(1.2rem,4.5vw,1.6rem);font-weight:700;color:#333;line-height:1.4;}
+.spinning-emoji{animation:spinFast 0.12s linear infinite!important;}
+@keyframes spinFast{0%{transform:rotate(0deg) scale(1.1)}100%{transform:rotate(360deg) scale(1.1)}}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.btn-truth{padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#c77dff,#4cc9f0);color:white;box-shadow:0 8px 25px rgba(199,125,255,0.4);transition:all 0.2s;}
+.btn-truth:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(199,125,255,0.5);}
+.btn-dare{padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b9d,#ff9f43);color:white;box-shadow:0 8px 25px rgba(255,107,157,0.4);transition:all 0.2s;}
+.btn-dare:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(255,107,157,0.5);}
+.btn-random{width:100%;padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b9d,#c77dff,#4cc9f0);background-size:200% 200%;color:white;box-shadow:0 10px 30px rgba(199,125,255,0.35);transition:all 0.2s;margin-bottom:12px;animation:gradientShift 3s ease infinite;}
+.btn-random:hover{transform:translateY(-3px);}
+.btn-secondary{width:100%;padding:14px;border:2.5px solid #c77dff;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:white;color:#c77dff;transition:all 0.2s;margin-top:10px;}
+.btn-secondary:hover{background:#f5eeff;transform:translateY(-2px);}
+.btn-back{width:100%;padding:13px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.7);color:#aaa;margin-top:10px;transition:all 0.2s;}
+.btn-back:hover{background:rgba(255,255,255,0.9);}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:white;padding:12px 24px;border-radius:30px;font-family:'Mitr',sans-serif;font-size:0.9rem;opacity:0;transition:all 0.3s;z-index:200;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden;}
+.confetti-piece{position:absolute;animation:confettiFall 1.5s ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="confetti-container" id="confetti"></div>
+<div class="toast" id="toast"></div>
+<div class="title-area">
+  <h1>💣 Truth or Dare</h1>
+  <p class="subtitle">สารภาพ หรือ รับคำท้า? เลือกเลย! 🎭</p>
+</div>
+<div class="box">
+  <div class="card-wrap type-idle" id="cardWrap">
+    <div class="card-inner" id="cardInner">
+      <span class="card-big-emoji" id="cardEmoji">🎲</span>
+      <p class="card-idle-text">เลือก Truth หรือ Dare<br>แล้วกดสุ่มได้เลย!</p>
+    </div>
+  </div>
+  <button class="btn-random" id="btnRandom" onclick="spin('random')">🎲 สุ่มเลย! (Truth หรือ Dare)</button>
+  <div class="btn-row">
+    <button class="btn-truth" onclick="spin('truth')">🔮 สุ่ม Truth</button>
+    <button class="btn-dare" onclick="spin('dare')">🔥 สุ่ม Dare</button>
+  </div>
+  <button class="btn-secondary" onclick="shareLink()">📤 Share ให้แฟน</button>
+  <button class="btn-back" onclick="location.href='index.html'">← หน้าหลัก</button>
+</div>
+<script>
+const truths=[
+  'ความทรงจำที่ประทับใจที่สุดของเราสองคนคืออะไร?',
+  'อะไรคือสิ่งแรกที่ทำให้ชอบเราตอนแรกพบกัน?',
+  'เคยแอบอิจฉาอะไรเกี่ยวกับฉันบ้างไหม?',
+  'ถ้าต้องอธิบายฉันด้วยคำ 3 คำ จะเลือกคำไหน?',
+  'สิ่งที่ทำให้ยิ้มทุกครั้งที่นึกถึงฉันคืออะไร?',
+  'เคยร้องไห้เพราะฉันไหม? เพราะอะไร?',
+  'ถ้าวันนี้เป็นวันสุดท้าย จะบอกอะไรกับฉัน?',
+  'นิสัยแย่ๆ ของฉันที่พยายามอดทนมากที่สุดคืออะไร?',
+  'ช่วงเวลาไหนที่รู้สึกรักฉันมากที่สุด?',
+  'ฝันว่าอนาคตของเราสองคนจะเป็นยังไง?',
+  'มีอะไรอยากบอกฉันมานานแล้วแต่ยังไม่ได้บอกไหม?',
+  'ถ้าให้ rate ความน่ารักของฉัน 1-10 ได้เท่าไหร่? (ตอบตรงๆ นะ 😂)',
+  'เคยโกรธฉันโดยที่ไม่ได้บอกบ้างไหม? เรื่องอะไร?',
+  'สิ่งที่ชอบมากที่สุดในตัวฉันคืออะไร?',
+  'date แบบไหนที่อยากไปด้วยกันมากที่สุดตอนนี้?',
+];
+const dares=[
+  'ร้องเพลงรักให้ฉันฟัง 1 ท่อน 🎤',
+  'ส่งข้อความรักหวานๆ ให้ฉัน 1 ข้อความตอนนี้เลย 💌',
+  'กอดฉันนานที่สุดเท่าที่จะทำได้ 🫂',
+  'บอกสิ่งที่ชอบในตัวฉัน 5 อย่างภายใน 30 วินาที ⏱️',
+  'ทำท่าน่ารักที่สุดให้ดู แล้วถ่ายรูปด้วยกัน 📸',
+  'โทรหาหรือส่งข้อความถึงคนในครอบครัวบอกว่าฉันดีแค่ไหน 😂',
+  'เต้นให้ฉันดูโดยไม่มีเพลง 🕺',
+  'เลียนแบบฉันให้ดู (พูด ท่าทาง หรืออะไรก็ได้ 😆)',
+  'ทำอาหารหรือขนมอะไรก็ได้ให้ฉันกิน 🍳',
+  'เขียนชื่อฉันบนมือตัวเองด้วยปากกา 💕',
+  'ส่งรูปที่ชอบที่สุดของเราสองคนให้ฉันดู 🖼️',
+  'บอกความลับเล็กๆ น้อยๆ ที่ฉันไม่รู้ 🤫',
+  'ทำหน้าน่ารักที่สุดให้ดู ถ่ายรูปไว้เป็นที่ระลึก 🥺',
+  'พูดว่า "ที่รัก ฉันรักนายมาก" ด้วยน้ำเสียงซีเรียสที่สุด 🥰',
+  'วาดรูปฉันให้ดู (ไม่ต้องสวยก็ได้ 😂) แล้วส่งให้ดู',
+];
+const idleEmojis=['🎲','💣','🎭','✨','🎀','💖','🌟'];
+let current={type:null,idx:null};
+let isSpinning=false;
+
+function spin(type){
+  if(isSpinning)return;
+  isSpinning=true;
+  const wrap=document.getElementById('cardWrap');
+  const inner=document.getElementById('cardInner');
+  const emojiEl=document.getElementById('cardEmoji');
+  let spinIdx=0;
+  const spinEmojis=type==='truth'?['🔮','💫','✨','🌟','💎']:type==='dare'?['🔥','💥','⚡','🎯','💣']:['🎲','💣','🔮','🔥','✨'];
+  emojiEl.classList.add('spinning-emoji');
+  wrap.className='card-wrap type-idle';
+  inner.innerHTML=`<span class="card-big-emoji spinning-emoji" id="cardEmoji" style="font-size:4.5rem">${spinEmojis[0]}</span>`;
+  const interval=setInterval(()=>{
+    const el=document.getElementById('cardEmoji');
+    if(el)el.textContent=spinEmojis[++spinIdx%spinEmojis.length];
+  },100);
+  setTimeout(()=>{
+    clearInterval(interval);
+    const resolvedType=type==='random'?(Math.random()>0.5?'truth':'dare'):type;
+    const pool=resolvedType==='truth'?truths:dares;
+    const idx=Math.floor(Math.random()*pool.length);
+    current={type:resolvedType,idx};
+    location.hash=(resolvedType==='truth'?'t':'d')+'-'+idx;
+    showCard(resolvedType,idx);
+    launchConfetti();
+    isSpinning=false;
+  },1100);
+}
+
+function showCard(type,idx){
+  const pool=type==='truth'?truths:dares;
+  const wrap=document.getElementById('cardWrap');
+  const emoji=type==='truth'?'🔮':'🔥';
+  const badgeClass=type==='truth'?'badge-truth':'badge-dare';
+  const label=type==='truth'?'✨ TRUTH':'🔥 DARE';
+  wrap.className='card-wrap type-'+type;
+  document.getElementById('cardInner').innerHTML=`
+    <span class="card-badge ${badgeClass}">${label}</span>
+    <span class="card-big-emoji" id="cardEmoji">${emoji}</span>
+    <p class="card-question">${pool[idx]}</p>`;
+}
+
+function shareLink(){
+  if(current.type===null){showToast('สุ่มก่อนนะ 🎲');return;}
+  const hash=(current.type==='truth'?'t':'d')+'-'+current.idx;
+  const url=location.origin+location.pathname+'#'+hash;
+  if(navigator.share){navigator.share({title:'Truth or Dare 💣',text:'มาเล่น Truth or Dare ด้วยกัน!',url});}
+  else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>showToast('Copy: '+url));}
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function launchConfetti(){
+  const container=document.getElementById('confetti');
+  const colors=['#ff6b9d','#c77dff','#4cc9f0','#ffd60a','#06d6a0'];
+  container.innerHTML='';
+  for(let i=0;i<50;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1+Math.random()*1.5}s;animation-delay:${Math.random()*.3}s;`;
+    container.appendChild(p);
+  }
+  setTimeout(()=>container.innerHTML='',3000);
+}
+
+// load from hash
+const hash=location.hash;
+if(hash.match(/^#[td]-\d+$/)){
+  const type=hash[1]==='t'?'truth':'dare';
+  const idx=parseInt(hash.slice(3));
+  const pool=type==='truth'?truths:dares;
+  if(!isNaN(idx)&&idx>=0&&idx<pool.length){
+    current={type,idx};
+    showCard(type,idx);
+  }
+}
+</script>
+</body>
+</html>
