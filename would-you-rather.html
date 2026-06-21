@@ -30,7 +30,7 @@ body::before{content:'🤔 ⚡ 💕 🌟 💖 ✨ 🔥 💗';position:fixed;top:
 .result-card{display:none;background:white;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);text-align:center;}
 .result-match{font-size:2.5rem;margin-bottom:8px;}
 .result-text{font-size:1.1rem;font-weight:700;color:#333;}
-.result-sub{font-size:0.85rem;color:#aaa;font-family:'Mitr',sans-serif;margin-top:4px;}
+.result-sub{font-size:0.85rem;color:#aaa;font-family:'Mitr',sans-serif;margin-top:4px;white-space:pre-line;}
 .waiting-card{display:none;background:white;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);text-align:center;}
 .waiting-text{font-size:1rem;color:#aaa;font-family:'Mitr',sans-serif;}
 .btn-next{width:100%;padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#4cc9f0,#c77dff);color:white;box-shadow:0 10px 30px rgba(76,201,240,0.35);transition:all 0.2s;margin-bottom:10px;}
@@ -153,31 +153,34 @@ function choose(choice){
 function revealResult(){
   if(myChoice===null){showToast('เลือกก่อนนะ! 🤔');return;}
   revealed=true;
-  const urlChoice=new URLSearchParams(location.search).get('p');
+  const partnerChoice=new URLSearchParams(location.search).get('p');
+  const q=questions[currentIdx];
+  const myText=myChoice==='a'?q.a:q.b;
   const resultCard=document.getElementById('resultCard');
   resultCard.style.display='block';
   document.getElementById('waitingCard').style.display='none';
   document.getElementById('btnReveal').style.display='none';
-  if(urlChoice&&urlChoice!==myChoice){
+  if(partnerChoice&&partnerChoice!==myChoice){
     document.getElementById('resultEmoji').textContent='💥';
     document.getElementById('resultText').textContent='ไม่ตรงกัน! แต่ก็น่ารักนะ 😂';
-    document.getElementById('resultSub').textContent='ความต่างทำให้ชีวิตน่าสนใจขึ้น!';
-  } else if(urlChoice&&urlChoice===myChoice){
+    const partnerText=partnerChoice==='a'?q.a:q.b;
+    document.getElementById('resultSub').textContent='คุณ: '+myText+'\nแฟน: '+partnerText;
+  } else if(partnerChoice&&partnerChoice===myChoice){
     launchConfetti();
     document.getElementById('resultEmoji').textContent='💖';
     document.getElementById('resultText').textContent='Match! คิดเหมือนกันเลย! 🥰';
-    document.getElementById('resultSub').textContent='เข้ากันมากจริงๆ~';
+    document.getElementById('resultSub').textContent='ทั้งคู่เลือก: '+myText;
   } else {
     document.getElementById('resultEmoji').textContent='✅';
-    document.getElementById('resultText').textContent=myChoice==='a'?questions[currentIdx].a:questions[currentIdx].b;
+    document.getElementById('resultText').textContent='คุณเลือก: '+myText;
     document.getElementById('resultSub').textContent='ส่ง link ให้แฟนเลือกด้วย แล้วดูว่าตรงกันไหม!';
   }
 }
 
 function shareLink(){
   if(currentIdx===null){showToast('เลือกคำถามก่อนนะ 🤔');return;}
-  const choice=myChoice?'&p='+myChoice:'';
-  const url=location.origin+location.pathname+'#q-'+currentIdx+choice;
+  const choiceParam=myChoice?'&p='+myChoice:'';
+  const url=location.origin+location.pathname+'?q='+currentIdx+choiceParam;
   if(navigator.share){navigator.share({title:'Would You Rather 🤔',text:'มาเล่น Would You Rather ด้วยกัน!',url});}
   else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>showToast('Copy: '+url));}
 }
@@ -200,20 +203,20 @@ function launchConfetti(){
   setTimeout(()=>container.innerHTML='',3000);
 }
 
-// load from hash
-const hash=location.hash;
-if(hash.startsWith('#q-')){
-  const idx=parseInt(hash.slice(3));
+// load from query params (?q=idx&p=choice)
+const params=new URLSearchParams(location.search);
+const qParam=params.get('q');
+const partnerChoice=params.get('p');
+if(qParam!==null){
+  const idx=parseInt(qParam);
   if(!isNaN(idx)&&idx>=0&&idx<questions.length){
     currentIdx=idx;
     usedIndexes=[idx];
-    // check if partner's choice is in URL search params
-    const partnerChoice=new URLSearchParams(location.search).get('p');
     loadQuestion(idx);
     if(partnerChoice){
       const info=document.getElementById('waitingCard');
       info.style.display='block';
-      info.innerHTML='<p class="waiting-text">แฟนเลือก <strong>'+(partnerChoice==='a'?questions[idx].a:questions[idx].b)+'</strong> แล้ว!<br>ลองเลือกของคุณแล้วกด เปิดเฉลย</p>';
+      info.innerHTML='<p class="waiting-text">แฟนเลือกแล้ว! 🤫<br>ลองเลือกของคุณก่อน แล้วค่อยกด <strong>เปิดเฉลย</strong> พร้อมกัน</p>';
     }
   }
 }
