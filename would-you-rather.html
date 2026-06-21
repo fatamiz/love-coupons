@@ -206,26 +206,18 @@ function renderHome(){
   box.innerHTML=`
     <div class="g-card">
       <span class="g-card-emoji">🤔</span>
-      <div class="g-card-title">Would You Rather</div>
-      <div class="g-card-desc">เล่นด้วยกัน 2 เครื่อง แบบ real-time!<br>สร้างห้อง แล้วส่ง link ให้แฟนเข้ามา</div>
-      <button class="btn-primary" onclick="createRoom()">✨ สร้างห้องใหม่</button>
-      <div class="or-divider">— หรือเข้าห้องที่มีอยู่ —</div>
-      <input class="code-input" id="codeInput" placeholder="รหัสห้อง 6 ตัว" maxlength="8"
-        oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
-        onkeydown="if(event.key==='Enter')joinRoomByCode()">
-      <button class="btn-secondary" onclick="joinRoomByCode()">🚪 เข้าห้อง</button>
-    </div>`;
+      <div class="g-card-title">กำลังสร้างห้อง...</div>
+      <div class="g-card-desc">รอแป๊บนึงนะ 🌸</div>
+    </div>
+    <div class="waiting-dots"><span></span><span></span><span></span></div>`;
 }
 
 function renderWaiting(){
-  const shareUrl=location.origin+location.pathname.replace(/\?.*$/,'')+'?room='+roomId;
   box.innerHTML=`
     <div class="g-card">
-      <span class="g-card-emoji">⏳</span>
-      <div class="g-card-title">รอแฟนเข้าห้อง...</div>
-      <div class="room-code-label">รหัสห้อง</div>
-      <div class="room-code-box">${roomId}</div>
-      <div class="g-card-desc" style="margin-bottom:16px">ส่ง link ให้แฟนเปิด หรือบอกรหัสห้องด้านบน</div>
+      <span class="g-card-emoji">💌</span>
+      <div class="g-card-title">ส่ง Link ให้แฟนก่อนนะ!</div>
+      <div class="g-card-desc">แฟนเปิด link แล้วเกมจะเริ่มอัตโนมัติเลย 🎮</div>
       <button class="btn-primary" onclick="shareRoomLink()">📤 ส่ง Link ให้แฟน</button>
     </div>
     <div class="waiting-dots"><span></span><span></span><span></span></div>`;
@@ -394,6 +386,7 @@ if(roomParam){
   }
 } else {
   renderHome();
+  createRoom();
 }
 </script>
 </body>
