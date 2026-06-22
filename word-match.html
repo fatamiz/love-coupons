@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💬 ทายคำ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;900&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Kanit',sans-serif;background:linear-gradient(135deg,#fff3e0 0%,#ffe0f0 30%,#e8d5ff 60%,#fff3e0 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 20px 40px;overflow-x:hidden;}
+body::before{content:'💬 ✨ 💡 🌟 💕 🔥 💬 ✨ 💡';position:fixed;top:-20px;left:0;width:100%;font-size:20px;letter-spacing:38px;animation:floatDown 14s linear infinite;opacity:0.18;z-index:0;white-space:nowrap;pointer-events:none;}
+@keyframes floatDown{0%{transform:translateY(-30px)}100%{transform:translateY(110vh)}}
+.title-area{text-align:center;margin-bottom:18px;position:relative;z-index:1;}
+.title-area h1{font-size:clamp(1.8rem,7vw,2.8rem);font-weight:900;background:linear-gradient(135deg,#ff9f43,#ff6b6b,#c77dff);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite;}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.subtitle{font-size:0.9rem;color:#ff9f43;margin-top:5px;font-family:'Mitr',sans-serif;}
+.box{width:100%;max-width:480px;position:relative;z-index:1;}
+
+/* Lobby */
+.g-card{background:white;border-radius:24px;padding:28px 22px;box-shadow:0 12px 40px rgba(255,159,67,0.15);margin-bottom:14px;text-align:center;}
+.g-card-emoji{font-size:3.5rem;display:block;margin-bottom:12px;}
+.g-card-title{font-size:1.25rem;font-weight:900;color:#333;margin-bottom:6px;}
+.g-card-desc{font-size:0.88rem;font-family:'Mitr',sans-serif;color:#aaa;line-height:1.5;margin-bottom:18px;}
+.waiting-dots{display:flex;justify-content:center;gap:8px;margin-top:18px;}
+.waiting-dots span{width:10px;height:10px;background:#ff9f43;border-radius:50%;animation:bounce 1.2s infinite;}
+.waiting-dots span:nth-child(2){animation-delay:0.2s;}
+.waiting-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-10px)}}
+
+/* Progress */
+.progress-wrap{margin-bottom:14px;}
+.progress-bar-bg{background:rgba(255,255,255,0.6);border-radius:10px;height:8px;overflow:hidden;}
+.progress-bar{background:linear-gradient(90deg,#ff9f43,#ff6b6b);height:100%;border-radius:10px;transition:width 0.4s;}
+.progress-label{font-size:0.8rem;font-family:'Mitr',sans-serif;color:#aaa;text-align:right;margin-top:4px;}
+
+/* Topic card */
+.topic-card{background:white;border-radius:24px;padding:30px 22px;margin-bottom:14px;box-shadow:0 12px 40px rgba(255,159,67,0.18),0 0 0 3px white;animation:cardFloat 3s ease-in-out infinite;text-align:center;}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.topic-round{font-size:0.7rem;font-family:'Mitr',sans-serif;color:#ff9f43;font-weight:700;letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;}
+.topic-icon{font-size:3.5rem;display:block;margin-bottom:12px;}
+.topic-text{font-size:clamp(1.1rem,4vw,1.4rem);font-weight:700;color:#333;line-height:1.4;margin-bottom:6px;}
+.attempt-badge{display:inline-block;background:#fff8f0;color:#ff9f43;font-size:0.75rem;font-family:'Mitr',sans-serif;font-weight:600;padding:3px 12px;border-radius:20px;border:1.5px solid #ffd0a8;}
+
+/* Input area */
+.input-area{background:white;border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,0,0,0.06);}
+.input-label{font-size:0.85rem;font-family:'Mitr',sans-serif;color:#aaa;margin-bottom:10px;}
+.answer-input{width:100%;padding:16px 18px;border:2.5px solid #ffd0a8;border-radius:16px;font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;color:#333;outline:none;transition:border-color 0.2s;text-align:center;}
+.answer-input:focus{border-color:#ff9f43;}
+.answer-input:disabled{background:#f9f9f9;color:#aaa;cursor:not-allowed;}
+.answer-input::placeholder{color:#ddd;font-weight:400;}
+
+/* Submitted / waiting state */
+.submitted-box{background:#fff8f0;border:2px solid #ffd0a8;border-radius:16px;padding:16px;text-align:center;margin-bottom:14px;}
+.submitted-answer{font-size:1.4rem;font-weight:900;color:#ff9f43;margin-bottom:6px;}
+.submitted-label{font-size:0.82rem;font-family:'Mitr',sans-serif;color:#aaa;}
+.waiting-partner{text-align:center;color:#aaa;font-family:'Mitr',sans-serif;font-size:0.9rem;margin-top:10px;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Result card */
+.result-card{background:white;border-radius:24px;padding:26px 20px;margin-bottom:14px;box-shadow:0 12px 40px rgba(0,0,0,0.08);text-align:center;}
+.result-big-emoji{font-size:3.5rem;margin-bottom:10px;}
+.result-title{font-size:1.3rem;font-weight:900;color:#333;margin-bottom:18px;}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+.result-side{background:#f9f9f9;border-radius:14px;padding:12px 10px;}
+.result-who{font-size:0.72rem;font-family:'Mitr',sans-serif;color:#aaa;margin-bottom:5px;}
+.result-word{font-size:1.1rem;font-weight:900;color:#333;word-break:break-all;}
+.result-word.match-word{color:#ff9f43;}
+.result-match-full{background:linear-gradient(135deg,#fff8f0,#fff3e0);border:2px solid #ffd0a8;border-radius:16px;padding:16px;margin-bottom:6px;}
+.result-match-word{font-size:1.6rem;font-weight:900;color:#ff9f43;}
+.result-match-label{font-size:0.82rem;font-family:'Mitr',sans-serif;color:#aaa;margin-top:4px;}
+
+/* Final */
+.score-card{background:white;border-radius:24px;padding:26px 20px;text-align:center;box-shadow:0 12px 40px rgba(255,159,67,0.15);margin-bottom:14px;}
+.score-big{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,#ff9f43,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.score-label{font-size:0.9rem;font-family:'Mitr',sans-serif;color:#aaa;margin-top:4px;}
+.score-msg{font-size:1.1rem;font-weight:700;color:#333;margin-top:12px;}
+.score-sub{font-size:0.85rem;font-family:'Mitr',sans-serif;color:#aaa;margin-top:4px;}
+.history-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.history-item{background:white;border-radius:14px;padding:12px 14px;box-shadow:0 4px 14px rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px;}
+.history-item.one-try{border-left:4px solid #06d6a0;}
+.history-item.multi-try{border-left:4px solid #ff9f43;}
+.history-icon{font-size:1.6rem;flex-shrink:0;}
+.history-info{flex:1;}
+.history-topic{font-size:0.78rem;font-family:'Mitr',sans-serif;color:#aaa;}
+.history-answer{font-size:0.95rem;font-weight:700;color:#333;}
+.history-attempts{font-size:0.72rem;font-family:'Mitr',sans-serif;color:#ff9f43;font-weight:600;}
+
+/* Buttons */
+.btn-primary{width:100%;padding:16px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff9f43,#ff6b6b);color:white;box-shadow:0 10px 30px rgba(255,159,67,0.35);transition:all 0.2s;margin-bottom:10px;display:block;}
+.btn-primary:hover{transform:translateY(-3px);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-secondary-outline{width:100%;padding:14px;border:2.5px solid #ff9f43;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:white;color:#ff9f43;transition:all 0.2s;margin-bottom:10px;display:block;}
+.btn-secondary-outline:hover{background:#fff8f0;transform:translateY(-2px);}
+.btn-secondary-outline:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-submit{width:100%;padding:15px;border:none;border-radius:16px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff9f43,#ff6b6b);color:white;margin-top:10px;transition:all 0.2s;}
+.btn-submit:hover{transform:translateY(-2px);}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-back{width:100%;max-width:480px;padding:13px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.7);color:#aaa;margin-top:4px;transition:all 0.2s;position:relative;z-index:1;}
+.btn-back:hover{background:rgba(255,255,255,0.9);}
+
+/* Toast & confetti */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:white;padding:11px 22px;border-radius:30px;font-family:'Mitr',sans-serif;font-size:0.88rem;opacity:0;transition:all 0.3s;z-index:200;pointer-events:none;white-space:nowrap;max-width:90vw;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden;}
+.confetti-piece{position:absolute;animation:confettiFall 1.5s ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="confetti-container" id="confetti"></div>
+<div class="toast" id="toast"></div>
+<div class="title-area">
+  <h1>💬 ทายคำ</h1>
+  <p class="subtitle">พิมพ์คำตอบให้ตรงกัน ถึงผ่านไปข้อต่อไป! ⚡</p>
+</div>
+<div class="box" id="box"></div>
+<button class="btn-back" onclick="goBack()">← หน้าหลัก</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyC98_FyVY_mzW_UwJ0-xQqMqx3Qy_paSi0",
+  authDomain:"love-games-a0127.firebaseapp.com",
+  databaseURL:"https://love-games-a0127-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"love-games-a0127",
+  storageBucket:"love-games-a0127.firebasestorage.app",
+  messagingSenderId:"1078221272996",
+  appId:"1:1078221272996:web:64c29179c9daa3a8837331"
+});
+const db=firebase.database();
+
+const topics=[
+  {icon:'🍔',text:'ของกินที่อยากกินตอนนี้'},
+  {icon:'🎬',text:'หนังที่อยากดูด้วยกัน'},
+  {icon:'🌏',text:'ประเทศที่อยากไปเที่ยว'},
+  {icon:'🐾',text:'สัตว์เลี้ยงที่อยากได้'},
+  {icon:'🌈',text:'สีที่ชอบมากที่สุด'},
+  {icon:'☕',text:'เครื่องดื่มที่ชอบ'},
+  {icon:'🎵',text:'เพลงหรือศิลปินที่ชอบ'},
+  {icon:'🍰',text:'ของหวานที่ชอบ'},
+  {icon:'🏖️',text:'ที่เที่ยวในฝัน'},
+  {icon:'🌙',text:'ฤดูกาลที่ชอบ'},
+];
+const TOTAL=topics.length;
+const scoreMessages=[
+  {max:12,msg:'เข้าใจกันมาก! 🥰',sub:'สองคนคิดเหมือนกันเกือบทุกข้อ!'},
+  {max:20,msg:'เข้ากันดีมาก! 💖',sub:'มีหลายข้อที่คิดตรงกันทีเดียว~'},
+  {max:30,msg:'เข้ากันพอสมควร 💫',sub:'บางข้อยากหน่อยแต่ทำได้!'},
+  {max:999,msg:'ต่างกันเยอะเลย 😂',sub:'ความต่างทำให้ชีวิตน่าสนใจขึ้น!'},
+];
+
+const box=document.getElementById('box');
+let roomId=null,myRole=null,roomRef=null,roomListener=null,roomData=null,advancing=false;
+
+function genId(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+function normalize(s){return (s||'').trim().replace(/\s+/g,' ').toLowerCase();}
+
+async function createRoom(){
+  roomId=genId();
+  myRole='host';
+  roomRef=db.ref('wm/'+roomId);
+  await roomRef.set({players:1,topicIdx:0,attempt:1,host:null,guest:null,history:{}});
+  roomRef.onDisconnect().remove();
+  history.pushState(null,'','?room='+roomId+'&r=h');
+  subscribeRoom();
+}
+
+async function doJoinGuest(code){
+  roomId=code;
+  myRole='guest';
+  roomRef=db.ref('wm/'+roomId);
+  const snap=await roomRef.once('value');
+  if(!snap.exists()){showToast('ไม่พบห้องนี้ 🙈');renderHome();createRoom();return;}
+  await roomRef.update({players:2});
+  history.pushState(null,'','?room='+roomId);
+  subscribeRoom();
+}
+
+function subscribeRoom(){
+  renderWaiting();
+  roomListener=roomRef.on('value',snap=>{
+    if(!snap.exists())return;
+    roomData=snap.val();
+    handleUpdate(roomData);
+  });
+}
+
+function handleUpdate(d){
+  if(!d)return;
+  if(d.players<2){renderWaiting();return;}
+  if(d.topicIdx>=TOTAL){renderFinal(d);return;}
+  const myAns=d[myRole];
+  const partnerAns=d[myRole==='host'?'guest':'host'];
+  if(myAns!==null&&myAns!==undefined&&partnerAns!==null&&partnerAns!==undefined){
+    renderResult(d);
+  } else {
+    renderTopic(d);
+  }
+}
+
+function renderHome(){
+  box.innerHTML=`
+    <div class="g-card">
+      <span class="g-card-emoji">💬</span>
+      <div class="g-card-title">กำลังสร้างห้อง...</div>
+      <div class="g-card-desc">รอแป๊บนึงนะ 🌸</div>
+    </div>
+    <div class="waiting-dots"><span></span><span></span><span></span></div>`;
+}
+
+function renderWaiting(){
+  box.innerHTML=`
+    <div class="g-card">
+      <span class="g-card-emoji">💌</span>
+      <div class="g-card-title">ส่ง Link ให้แฟนก่อนนะ!</div>
+      <div class="g-card-desc">แฟนเปิด link แล้วเกมจะเริ่มอัตโนมัติเลย 🎮</div>
+      <button class="btn-primary" onclick="shareRoomLink()">📤 ส่ง Link ให้แฟน</button>
+    </div>
+    <div class="waiting-dots"><span></span><span></span><span></span></div>`;
+}
+
+function shareRoomLink(){
+  const url=location.origin+location.pathname.replace(/[?#].*/,'')+'?room='+roomId;
+  if(navigator.share){navigator.share({title:'ทายคำ 💬',text:'มาเล่นทายคำด้วยกัน!',url});}
+  else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>prompt('Copy link:',url));}
+}
+
+function renderTopic(d){
+  const t=topics[d.topicIdx];
+  const pct=(d.topicIdx/TOTAL)*100;
+  const myAns=d[myRole];
+  const alreadySubmitted=myAns!==null&&myAns!==undefined;
+  const partnerAns=d[myRole==='host'?'guest':'host'];
+  box.innerHTML=`
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="progress-label">ข้อ ${d.topicIdx+1} / ${TOTAL}</div>
+    </div>
+    <div class="topic-card">
+      <div class="topic-round">หัวข้อที่ ${d.topicIdx+1}</div>
+      <span class="topic-icon">${t.icon}</span>
+      <div class="topic-text">${t.text}</div>
+      ${(d.attempt||1)>1?`<div style="margin-top:8px"><span class="attempt-badge">🔄 ครั้งที่ ${d.attempt}</span></div>`:''}
+    </div>
+    ${alreadySubmitted
+      ?`<div class="submitted-box">
+          <div class="submitted-answer">"${myAns}"</div>
+          <div class="submitted-label">คุณส่งคำตอบแล้ว ✅</div>
+          <div class="waiting-partner">${partnerAns!=null?'แฟนตอบแล้ว! กำลังแสดงผล...':'⏳ รอแฟนพิมพ์...'}</div>
+        </div>`
+      :`<div class="input-area">
+          <div class="input-label">พิมพ์คำตอบของคุณ (แฟนจะไม่เห็นจนกว่าจะส่ง):</div>
+          <input class="answer-input" id="answerInput" placeholder="พิมพ์ที่นี่..." maxlength="50"
+            onkeydown="if(event.key==='Enter')submitAnswer()">
+          <button class="btn-submit" onclick="submitAnswer()">✅ ส่งคำตอบ!</button>
+        </div>`
+    }`;
+  if(!alreadySubmitted){
+    setTimeout(()=>document.getElementById('answerInput')?.focus(),100);
+  }
+}
+
+async function submitAnswer(){
+  const input=document.getElementById('answerInput');
+  if(!input)return;
+  const val=input.value.trim();
+  if(!val){showToast('พิมพ์คำตอบก่อนนะ 🙈');return;}
+  input.disabled=true;
+  document.querySelector('.btn-submit')?.setAttribute('disabled','');
+  await roomRef.update({[myRole]:val});
+}
+
+function renderResult(d){
+  const t=topics[d.topicIdx];
+  const myAns=d[myRole];
+  const partnerAns=d[myRole==='host'?'guest':'host'];
+  const isMatch=normalize(myAns)===normalize(partnerAns);
+  const pct=((d.topicIdx+(isMatch?1:0))/TOTAL)*100;
+  const isLast=d.topicIdx>=TOTAL-1;
+
+  if(isMatch)launchConfetti();
+
+  box.innerHTML=`
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="progress-label">ข้อ ${d.topicIdx+1} / ${TOTAL}</div>
+    </div>
+    <div class="result-card">
+      <div class="result-big-emoji">${isMatch?'💖':'💥'}</div>
+      <div class="result-title">${isMatch?'ตรงกัน! เยี่ยมมาก! 🎉':'ไม่ตรงกัน! ลองใหม่นะ 😄'}</div>
+      ${isMatch
+        ?`<div class="result-match-full">
+            <div class="result-match-word">"${myAns}"</div>
+            <div class="result-match-label">ทั้งคู่ตอบเหมือนกันเลย! ✨</div>
+          </div>`
+        :`<div class="result-grid">
+            <div class="result-side">
+              <div class="result-who">คุณ 👤</div>
+              <div class="result-word">${myAns}</div>
+            </div>
+            <div class="result-side">
+              <div class="result-who">แฟน 💕</div>
+              <div class="result-word">${partnerAns}</div>
+            </div>
+          </div>`
+      }
+    </div>
+    <button class="btn-primary" id="actionBtn" onclick="${isMatch?'nextTopic()':'tryAgain()'}">${isMatch?(isLast?'🎉 ดูผลสรุป!':'▶ ข้อต่อไป'):'🔄 ลองใหม่!'}</button>`;
+}
+
+async function tryAgain(){
+  if(advancing)return;
+  advancing=true;
+  document.getElementById('actionBtn')?.setAttribute('disabled','');
+  const d=roomData;
+  if(!d){advancing=false;return;}
+  await roomRef.update({host:null,guest:null,attempt:(d.attempt||1)+1});
+  advancing=false;
+}
+
+async function nextTopic(){
+  if(advancing)return;
+  advancing=true;
+  document.getElementById('actionBtn')?.setAttribute('disabled','');
+  const d=roomData;
+  if(!d){advancing=false;return;}
+  await roomRef.update({
+    host:null,guest:null,
+    topicIdx:d.topicIdx+1,
+    attempt:1,
+    [`history/${d.topicIdx}`]:{answer:d.host,attempts:d.attempt||1},
+  });
+  advancing=false;
+}
+
+function renderFinal(d){
+  const hist=d.history||{};
+  let totalAttempts=0,items='';
+  topics.forEach((t,i)=>{
+    const h=hist[i]||{};
+    const attempts=h.attempts||1;
+    totalAttempts+=attempts;
+    items+=`
+      <div class="history-item ${attempts===1?'one-try':'multi-try'}">
+        <div class="history-icon">${t.icon}</div>
+        <div class="history-info">
+          <div class="history-topic">${t.text}</div>
+          <div class="history-answer">"${h.answer||'?'}"</div>
+        </div>
+        <div class="history-attempts">${attempts===1?'⭐ 1 ครั้ง':`${attempts} ครั้ง`}</div>
+      </div>`;
+  });
+  const msg=scoreMessages.find(m=>totalAttempts<=m.max)||scoreMessages[scoreMessages.length-1];
+  if(totalAttempts<=TOTAL+3)setTimeout(launchConfetti,200);
+  box.innerHTML=`
+    <div class="score-card">
+      <div class="score-big">${totalAttempts}</div>
+      <div class="score-label">ครั้งรวมทั้งหมด (${TOTAL} ข้อ)</div>
+      <div class="score-msg">${msg.msg}</div>
+      <div class="score-sub">${msg.sub}</div>
+    </div>
+    <div class="history-list">${items}</div>
+    <button class="btn-primary" onclick="restartGame()">🔄 เล่นใหม่</button>`;
+  setTimeout(()=>roomRef&&roomRef.remove(),5000);
+}
+
+async function restartGame(){
+  if(!roomRef){renderHome();return;}
+  advancing=false;
+  await roomRef.set({players:2,topicIdx:0,attempt:1,host:null,guest:null,history:{}});
+}
+
+function goBack(){
+  if(roomListener&&roomRef)roomRef.off('value',roomListener);
+  location.href='index.html';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function launchConfetti(){
+  const c=document.getElementById('confetti');
+  const colors=['#ff9f43','#ff6b6b','#c77dff','#ffd60a','#06d6a0'];
+  c.innerHTML='';
+  for(let i=0;i<70;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1+Math.random()*1.5}s;animation-delay:${Math.random()*.4}s;`;
+    c.appendChild(p);
+  }
+  setTimeout(()=>c.innerHTML='',3500);
+}
+
+const params=new URLSearchParams(location.search);
+const roomParam=params.get('room');
+const roleParam=params.get('r');
+if(roomParam){
+  roomId=roomParam.toUpperCase();
+  if(roleParam==='h'){myRole='host';roomRef=db.ref('wm/'+roomId);subscribeRoom();}
+  else{doJoinGuest(roomId);}
+} else {
+  renderHome();
+  createRoom();
+}
+</script>
+</body>
+</html>
