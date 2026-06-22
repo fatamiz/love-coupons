@@ -140,7 +140,6 @@ async function createRoom(){
   roomRef=db.ref('lc/'+roomId);
   const remaining=localState.remaining.length>0?localState.remaining:[...Array(coupons.length).keys()];
   await roomRef.set({players:1,remaining,current:null,spinning:false});
-  roomRef.onDisconnect().remove();
   history.pushState(null,'','?room='+roomId+'&r=h');
   subscribeRoom();
 }
@@ -150,7 +149,7 @@ async function doJoinGuest(code){
   myRole='guest';
   roomRef=db.ref('lc/'+roomId);
   const snap=await roomRef.once('value');
-  if(!snap.exists()){showToast('ไม่พบห้องนี้ 🙈');renderHome();createRoom();return;}
+  if(!snap.exists()){showToast('ลิงก์หมดอายุแล้ว ขอลิงก์ใหม่จากแฟนได้เลย 😅');setTimeout(()=>{window.location.href=window.location.pathname;},2500);return;}
   await roomRef.update({players:2});
   history.pushState(null,'','?room='+roomId);
   subscribeRoom();
