@@ -111,7 +111,7 @@ body::before{content:'💬 ✨ 💡 🌟 💕 🔥 💬 ✨ 💡';position:fixed
 <div class="toast" id="toast"></div>
 <div class="title-area">
   <h1>💬 ทายคำ</h1>
-  <p class="subtitle">พิมพ์คำตอบให้ตรงกัน ถึงผ่านไปข้อต่อไป! ⚡</p>
+  <p class="subtitle">พิมพ์คำเดียวกันให้ตรงกัน นับว่าใช้กี่ครั้ง! 🧠</p>
 </div>
 <div class="box" id="box"></div>
 <button class="btn-back" onclick="goBack()">← หน้าหลัก</button>
@@ -130,26 +130,6 @@ firebase.initializeApp({
 });
 const db=firebase.database();
 
-const topics=[
-  {icon:'🍔',text:'ของกินที่อยากกินตอนนี้'},
-  {icon:'🎬',text:'หนังที่อยากดูด้วยกัน'},
-  {icon:'🌏',text:'ประเทศที่อยากไปเที่ยว'},
-  {icon:'🐾',text:'สัตว์เลี้ยงที่อยากได้'},
-  {icon:'🌈',text:'สีที่ชอบมากที่สุด'},
-  {icon:'☕',text:'เครื่องดื่มที่ชอบ'},
-  {icon:'🎵',text:'เพลงหรือศิลปินที่ชอบ'},
-  {icon:'🍰',text:'ของหวานที่ชอบ'},
-  {icon:'🏖️',text:'ที่เที่ยวในฝัน'},
-  {icon:'🌙',text:'ฤดูกาลที่ชอบ'},
-];
-const TOTAL=topics.length;
-const scoreMessages=[
-  {max:12,msg:'เข้าใจกันมาก! 🥰',sub:'สองคนคิดเหมือนกันเกือบทุกข้อ!'},
-  {max:20,msg:'เข้ากันดีมาก! 💖',sub:'มีหลายข้อที่คิดตรงกันทีเดียว~'},
-  {max:30,msg:'เข้ากันพอสมควร 💫',sub:'บางข้อยากหน่อยแต่ทำได้!'},
-  {max:999,msg:'ต่างกันเยอะเลย 😂',sub:'ความต่างทำให้ชีวิตน่าสนใจขึ้น!'},
-];
-
 const box=document.getElementById('box');
 let roomId=null,myRole=null,roomRef=null,roomListener=null,roomData=null,advancing=false;
 
@@ -163,7 +143,7 @@ async function createRoom(){
   roomId=genId();
   myRole='host';
   roomRef=db.ref('wm/'+roomId);
-  await roomRef.set({players:1,topicIdx:0,attempt:1,host:null,guest:null,history:{}});
+  await roomRef.set({players:1,round:0,attempt:1,host:null,guest:null,done:false,history:{}});
   history.pushState(null,'','?room='+roomId+'&r=h');
   subscribeRoom();
 }
@@ -191,14 +171,11 @@ function subscribeRoom(){
 function handleUpdate(d){
   if(!d)return;
   if(d.players<2){renderWaiting();return;}
-  if(d.topicIdx>=TOTAL){renderFinal(d);return;}
+  if(d.done){renderFinal(d);return;}
   const myAns=d[myRole];
   const partnerAns=d[myRole==='host'?'guest':'host'];
-  if(myAns!==null&&myAns!==undefined&&partnerAns!==null&&partnerAns!==undefined){
-    renderResult(d);
-  } else {
-    renderTopic(d);
-  }
+  if(myAns!=null&&partnerAns!=null){renderResult(d);}
+  else{renderInput(d);}
 }
 
 function renderHome(){
@@ -228,21 +205,16 @@ function shareRoomLink(){
   else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>prompt('Copy link:',url));}
 }
 
-function renderTopic(d){
-  const t=topics[d.topicIdx];
-  const pct=(d.topicIdx/TOTAL)*100;
+function renderInput(d){
   const myAns=d[myRole];
-  const alreadySubmitted=myAns!==null&&myAns!==undefined;
+  const alreadySubmitted=myAns!=null;
   const partnerAns=d[myRole==='host'?'guest':'host'];
+  const histLen=Object.keys(d.history||{}).length;
   box.innerHTML=`
-    <div class="progress-wrap">
-      <div class="progress-bar-bg"><div class="progress-bar" style="width:${pct}%"></div></div>
-      <div class="progress-label">ข้อ ${d.topicIdx+1} / ${TOTAL}</div>
-    </div>
     <div class="topic-card">
-      <div class="topic-round">หัวข้อที่ ${d.topicIdx+1}</div>
-      <span class="topic-icon">${t.icon}</span>
-      <div class="topic-text">${t.text}</div>
+      <div class="topic-round">รอบที่ ${(d.round||0)+1}</div>
+      <span class="topic-icon">💬</span>
+      <div class="topic-text">พิมพ์คำอะไรก็ได้<br><span style="font-size:0.9em;color:#aaa;font-weight:400">แล้วดูว่าตรงกันไหม?</span></div>
       ${(d.attempt||1)>1?`<div style="margin-top:8px"><span class="attempt-badge">🔄 ครั้งที่ ${d.attempt}</span></div>`:''}
     </div>
     ${alreadySubmitted
@@ -257,10 +229,9 @@ function renderTopic(d){
             onkeydown="if(event.key==='Enter')submitAnswer()">
           <button class="btn-submit" onclick="submitAnswer()">✅ ส่งคำตอบ!</button>
         </div>`
-    }`;
-  if(!alreadySubmitted){
-    setTimeout(()=>document.getElementById('answerInput')?.focus(),100);
-  }
+    }
+    ${histLen>0?`<button class="btn-secondary-outline" onclick="endGame()">🏁 จบเกมและดูผล (${histLen} คำ)</button>`:''}`;
+  if(!alreadySubmitted){setTimeout(()=>document.getElementById('answerInput')?.focus(),100);}
 }
 
 async function submitAnswer(){
@@ -274,19 +245,17 @@ async function submitAnswer(){
 }
 
 function renderResult(d){
-  const t=topics[d.topicIdx];
   const myAns=d[myRole];
   const partnerAns=d[myRole==='host'?'guest':'host'];
   const isMatch=normalize(myAns)===normalize(partnerAns);
-  const pct=((d.topicIdx+(isMatch?1:0))/TOTAL)*100;
-  const isLast=d.topicIdx>=TOTAL-1;
+  const histLen=Object.keys(d.history||{}).length;
+  const canEnd=histLen>0||isMatch;
 
   if(isMatch)launchConfetti();
 
   box.innerHTML=`
-    <div class="progress-wrap">
-      <div class="progress-bar-bg"><div class="progress-bar" style="width:${pct}%"></div></div>
-      <div class="progress-label">ข้อ ${d.topicIdx+1} / ${TOTAL}</div>
+    <div class="topic-card" style="animation:none;">
+      <div class="topic-round">รอบที่ ${(d.round||0)+1} · ครั้งที่ ${d.attempt||1}</div>
     </div>
     <div class="result-card">
       <div class="result-big-emoji">${isMatch?'💖':'💥'}</div>
@@ -294,7 +263,7 @@ function renderResult(d){
       ${isMatch
         ?`<div class="result-match-full">
             <div class="result-match-word">"${myAns}"</div>
-            <div class="result-match-label">ทั้งคู่ตอบเหมือนกันเลย! ✨</div>
+            <div class="result-match-label">ทั้งคู่ตอบเหมือนกันเลย! ✨ ใช้ ${d.attempt||1} ครั้ง</div>
           </div>`
         :`<div class="result-grid">
             <div class="result-side">
@@ -308,7 +277,8 @@ function renderResult(d){
           </div>`
       }
     </div>
-    <button class="btn-primary" id="actionBtn" onclick="${isMatch?'nextTopic()':'tryAgain()'}">${isMatch?(isLast?'🎉 ดูผลสรุป!':'▶ ข้อต่อไป'):'🔄 ลองใหม่!'}</button>`;
+    <button class="btn-primary" id="actionBtn" onclick="${isMatch?'nextRound()':'tryAgain()'}">${isMatch?'▶ รอบต่อไป':'🔄 ลองใหม่!'}</button>
+    ${canEnd?`<button class="btn-secondary-outline" onclick="endGame()">🏁 จบเกมและดูผล (${isMatch?histLen+1:histLen} คำ)</button>`:''}`;
 }
 
 async function tryAgain(){
@@ -321,7 +291,7 @@ async function tryAgain(){
   advancing=false;
 }
 
-async function nextTopic(){
+async function nextRound(){
   if(advancing)return;
   advancing=true;
   document.getElementById('actionBtn')?.setAttribute('disabled','');
@@ -329,40 +299,65 @@ async function nextTopic(){
   if(!d){advancing=false;return;}
   await roomRef.update({
     host:null,guest:null,
-    topicIdx:d.topicIdx+1,
+    round:(d.round||0)+1,
     attempt:1,
-    [`history/${d.topicIdx}`]:{answer:d.host,attempts:d.attempt||1},
+    [`history/${d.round||0}`]:{word:d.host,attempts:d.attempt||1},
   });
   advancing=false;
 }
 
+async function endGame(){
+  const d=roomData;
+  if(!d)return;
+  const myAns=d[myRole];
+  const partnerAns=d[myRole==='host'?'guest':'host'];
+  const isMatch=myAns&&partnerAns&&normalize(myAns)===normalize(partnerAns);
+  const updates={done:true};
+  if(isMatch){updates[`history/${d.round||0}`]={word:d.host,attempts:d.attempt||1};}
+  await roomRef.update(updates);
+}
+
 function renderFinal(d){
   const hist=d.history||{};
-  let totalAttempts=0,items='';
-  topics.forEach((t,i)=>{
-    const h=hist[i]||{};
+  const entries=Object.entries(hist).sort(([a],[b])=>+a-+b);
+  const totalRounds=entries.length;
+  const totalAttempts=entries.reduce((s,[,h])=>s+(h.attempts||1),0);
+  const avgAttempts=totalRounds>0?totalAttempts/totalRounds:0;
+
+  let items='';
+  entries.forEach(([,h],i)=>{
     const attempts=h.attempts||1;
-    totalAttempts+=attempts;
     items+=`
       <div class="history-item ${attempts===1?'one-try':'multi-try'}">
-        <div class="history-icon">${t.icon}</div>
+        <div class="history-icon">💬</div>
         <div class="history-info">
-          <div class="history-topic">${t.text}</div>
-          <div class="history-answer">"${h.answer||'?'}"</div>
+          <div class="history-topic">รอบที่ ${i+1}</div>
+          <div class="history-answer">"${h.word||'?'}"</div>
         </div>
         <div class="history-attempts">${attempts===1?'⭐ 1 ครั้ง':`${attempts} ครั้ง`}</div>
       </div>`;
   });
-  const msg=scoreMessages.find(m=>totalAttempts<=m.max)||scoreMessages[scoreMessages.length-1];
-  if(totalAttempts<=TOTAL+3)setTimeout(launchConfetti,200);
+
+  const msgs=[
+    {maxAvg:1,  msg:'อ่านใจกันได้เลย! 🔮',sub:'ตรงกันในครั้งแรกทุกคำ!'},
+    {maxAvg:2,  msg:'เข้าใจกันมาก! 🥰',  sub:'สองคนคิดเหมือนกันเกือบตลอด~'},
+    {maxAvg:3.5,msg:'เข้ากันดีมาก! 💖',  sub:'มีหลายคำที่คิดตรงกัน!'},
+    {maxAvg:999,msg:'ต่างกันเยอะเลย 😂', sub:'ความต่างทำให้ชีวิตสนุกขึ้น!'},
+  ];
+  const msg=msgs.find(m=>avgAttempts<=m.maxAvg)||msgs[msgs.length-1];
+  if(avgAttempts<=2&&totalRounds>=2)setTimeout(launchConfetti,200);
+
   box.innerHTML=`
     <div class="score-card">
-      <div class="score-big">${totalAttempts}</div>
-      <div class="score-label">ครั้งรวมทั้งหมด (${TOTAL} ข้อ)</div>
+      <div class="score-big">${totalRounds}</div>
+      <div class="score-label">คำที่ตรงกัน · รวม ${totalAttempts} ครั้ง</div>
       <div class="score-msg">${msg.msg}</div>
       <div class="score-sub">${msg.sub}</div>
     </div>
-    <div class="history-list">${items}</div>
+    ${totalRounds>0
+      ?`<div class="history-list">${items}</div>`
+      :`<div class="g-card"><span class="g-card-emoji">😅</span><div class="g-card-desc">ยังไม่ได้ตรงกันสักคำเลย!</div></div>`
+    }
     <button class="btn-primary" onclick="restartGame()">🔄 เล่นใหม่</button>`;
   setTimeout(()=>roomRef&&roomRef.remove(),5000);
 }
@@ -370,7 +365,7 @@ function renderFinal(d){
 async function restartGame(){
   if(!roomRef){renderHome();return;}
   advancing=false;
-  await roomRef.set({players:2,topicIdx:0,attempt:1,host:null,guest:null,history:{}});
+  await roomRef.set({players:2,round:0,attempt:1,host:null,guest:null,done:false,history:{}});
 }
 
 function goBack(){
