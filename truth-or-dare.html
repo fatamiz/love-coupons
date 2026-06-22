@@ -24,22 +24,34 @@ body::before{content:'💣 ✨ 💕 🎭 💖 🌟 🎀 💗';position:fixed;top
 .card-badge{font-size:0.75rem;font-family:'Mitr',sans-serif;letter-spacing:3px;font-weight:700;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:16px;}
 .badge-truth{background:#f5eeff;color:#c77dff;}
 .badge-dare{background:#fff0f6;color:#ff6b9d;}
-.card-big-emoji{font-size:4.5rem;margin-bottom:14px;display:block;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+.card-big-emoji{font-size:4.5rem;margin-bottom:14px;display:block;}
 @keyframes popIn{0%{transform:scale(0) rotate(-15deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
 .card-idle-text{font-size:1.2rem;color:#ccc;font-family:'Mitr',sans-serif;}
 .card-question{font-size:clamp(1.2rem,4.5vw,1.6rem);font-weight:700;color:#333;line-height:1.4;}
-.spinning-emoji{animation:spinFast 0.12s linear infinite!important;}
 @keyframes spinFast{0%{transform:rotate(0deg) scale(1.1)}100%{transform:rotate(360deg) scale(1.1)}}
+.spin-anim{animation:spinFast 0.12s linear infinite!important;}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 .btn-truth{padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#c77dff,#4cc9f0);color:white;box-shadow:0 8px 25px rgba(199,125,255,0.4);transition:all 0.2s;}
-.btn-truth:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(199,125,255,0.5);}
+.btn-truth:hover{transform:translateY(-3px);}
+.btn-truth:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
 .btn-dare{padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b9d,#ff9f43);color:white;box-shadow:0 8px 25px rgba(255,107,157,0.4);transition:all 0.2s;}
-.btn-dare:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(255,107,157,0.5);}
+.btn-dare:hover{transform:translateY(-3px);}
+.btn-dare:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
 .btn-random{width:100%;padding:17px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b9d,#c77dff,#4cc9f0);background-size:200% 200%;color:white;box-shadow:0 10px 30px rgba(199,125,255,0.35);transition:all 0.2s;margin-bottom:12px;animation:gradientShift 3s ease infinite;}
 .btn-random:hover{transform:translateY(-3px);}
-.btn-secondary{width:100%;padding:14px;border:2.5px solid #c77dff;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:white;color:#c77dff;transition:all 0.2s;margin-top:10px;}
-.btn-secondary:hover{background:#f5eeff;transform:translateY(-2px);}
-.btn-back{width:100%;padding:13px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.7);color:#aaa;margin-top:10px;transition:all 0.2s;}
+.btn-random:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.g-card{background:white;border-radius:24px;padding:28px 22px;box-shadow:0 12px 40px rgba(199,125,255,0.15);margin-bottom:14px;text-align:center;}
+.g-card-emoji{font-size:3.5rem;display:block;margin-bottom:12px;}
+.g-card-title{font-size:1.25rem;font-weight:900;color:#333;margin-bottom:6px;}
+.g-card-desc{font-size:0.88rem;font-family:'Mitr',sans-serif;color:#aaa;line-height:1.5;margin-bottom:18px;}
+.waiting-dots{display:flex;justify-content:center;gap:8px;margin-top:18px;}
+.waiting-dots span{width:10px;height:10px;background:#c77dff;border-radius:50%;animation:bounce 1.2s infinite;}
+.waiting-dots span:nth-child(2){animation-delay:0.2s;}
+.waiting-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-10px)}}
+.btn-primary{width:100%;padding:16px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#c77dff,#ff6b9d);color:white;box-shadow:0 10px 30px rgba(199,125,255,0.35);transition:all 0.2s;margin-bottom:10px;display:block;}
+.btn-primary:hover{transform:translateY(-3px);}
+.btn-back{width:100%;max-width:480px;padding:13px;border:none;border-radius:18px;font-family:'Kanit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.7);color:#aaa;margin-top:10px;transition:all 0.2s;position:relative;z-index:1;}
 .btn-back:hover{background:rgba(255,255,255,0.9);}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:white;padding:12px 24px;border-radius:30px;font-family:'Mitr',sans-serif;font-size:0.9rem;opacity:0;transition:all 0.3s;z-index:200;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -53,24 +65,25 @@ body::before{content:'💣 ✨ 💕 🎭 💖 🌟 🎀 💗';position:fixed;top
 <div class="toast" id="toast"></div>
 <div class="title-area">
   <h1>💣 Truth or Dare</h1>
-  <p class="subtitle">สารภาพ หรือ รับคำท้า? เลือกเลย! 🎭</p>
+  <p class="subtitle">เล่นด้วยกัน 2 เครื่อง แบบ real-time ⚡</p>
 </div>
-<div class="box">
-  <div class="card-wrap type-idle" id="cardWrap">
-    <div class="card-inner" id="cardInner">
-      <span class="card-big-emoji" id="cardEmoji">🎲</span>
-      <p class="card-idle-text">เลือก Truth หรือ Dare<br>แล้วกดสุ่มได้เลย!</p>
-    </div>
-  </div>
-  <button class="btn-random" id="btnRandom" onclick="spin('random')">🎲 สุ่มเลย! (Truth หรือ Dare)</button>
-  <div class="btn-row">
-    <button class="btn-truth" onclick="spin('truth')">🔮 สุ่ม Truth</button>
-    <button class="btn-dare" onclick="spin('dare')">🔥 สุ่ม Dare</button>
-  </div>
-  <button class="btn-secondary" onclick="shareLink()">📤 Share ให้แฟน</button>
-  <button class="btn-back" onclick="location.href='index.html'">← หน้าหลัก</button>
-</div>
+<div class="box" id="box"></div>
+<button class="btn-back" onclick="goBack()">← หน้าหลัก</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
 <script>
+firebase.initializeApp({
+  apiKey:"AIzaSyC98_FyVY_mzW_UwJ0-xQqMqx3Qy_paSi0",
+  authDomain:"love-games-a0127.firebaseapp.com",
+  databaseURL:"https://love-games-a0127-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"love-games-a0127",
+  storageBucket:"love-games-a0127.firebasestorage.app",
+  messagingSenderId:"1078221272996",
+  appId:"1:1078221272996:web:64c29179c9daa3a8837331"
+});
+const db=firebase.database();
+
 const truths=[
   'ความทรงจำที่ประทับใจที่สุดของเราสองคนคืออะไร?',
   'อะไรคือสิ่งแรกที่ทำให้ชอบเราตอนแรกพบกัน?',
@@ -103,59 +116,158 @@ const dares=[
   'บอกความลับเล็กๆ น้อยๆ ที่ฉันไม่รู้ 🤫',
   'ทำหน้าน่ารักที่สุดให้ดู ถ่ายรูปไว้เป็นที่ระลึก 🥺',
   'พูดว่า "ที่รัก ฉันรักนายมาก" ด้วยน้ำเสียงซีเรียสที่สุด 🥰',
-  'วาดรูปฉันให้ดู (ไม่ต้องสวยก็ได้ 😂) แล้วส่งให้ดู',
+  'วาดรูปฉันให้ดู (ไม่ต้องสวยก็ได้ 😂) แล้วส่งให้ดู 🎨',
 ];
-const idleEmojis=['🎲','💣','🎭','✨','🎀','💖','🌟'];
-let current={type:null,idx:null};
-let isSpinning=false;
 
-function spin(type){
+const box=document.getElementById('box');
+let roomId=null,myRole=null,roomRef=null,roomListener=null,isSpinning=false,prevCardKey=null;
+
+function genId(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+
+async function createRoom(){
+  roomId=genId();
+  myRole='host';
+  roomRef=db.ref('tod/'+roomId);
+  await roomRef.set({players:1,card:null});
+  roomRef.onDisconnect().remove();
+  history.pushState(null,'','?room='+roomId+'&r=h');
+  subscribeRoom();
+}
+
+async function doJoinGuest(code){
+  roomId=code;
+  myRole='guest';
+  roomRef=db.ref('tod/'+roomId);
+  const snap=await roomRef.once('value');
+  if(!snap.exists()){showToast('ไม่พบห้องนี้ 🙈');renderHome();createRoom();return;}
+  await roomRef.update({players:2});
+  history.pushState(null,'','?room='+roomId);
+  subscribeRoom();
+}
+
+function subscribeRoom(){
+  renderWaiting();
+  roomListener=roomRef.on('value',snap=>{
+    if(!snap.exists())return;
+    const d=snap.val();
+    if(d.players<2){renderWaiting();return;}
+    handleUpdate(d);
+  });
+}
+
+function handleUpdate(d){
+  if(d.card==='spinning'){
+    renderSpinning();
+  } else if(!d.card){
+    renderGame(null);
+    prevCardKey=null;
+  } else {
+    const key=d.card.type+d.card.idx;
+    renderGame(d.card);
+    if(prevCardKey!==key){launchConfetti();}
+    prevCardKey=key;
+    isSpinning=false;
+  }
+}
+
+function renderHome(){
+  box.innerHTML=`
+    <div class="g-card">
+      <span class="g-card-emoji">💣</span>
+      <div class="g-card-title">กำลังสร้างห้อง...</div>
+      <div class="g-card-desc">รอแป๊บนึงนะ 🌸</div>
+    </div>
+    <div class="waiting-dots"><span></span><span></span><span></span></div>`;
+}
+
+function renderWaiting(){
+  box.innerHTML=`
+    <div class="g-card">
+      <span class="g-card-emoji">💌</span>
+      <div class="g-card-title">ส่ง Link ให้แฟนก่อนนะ!</div>
+      <div class="g-card-desc">แฟนเปิด link แล้วเกมจะเริ่มอัตโนมัติเลย 🎮</div>
+      <button class="btn-primary" onclick="shareRoomLink()">📤 ส่ง Link ให้แฟน</button>
+    </div>
+    <div class="waiting-dots"><span></span><span></span><span></span></div>`;
+}
+
+function shareRoomLink(){
+  const url=location.origin+location.pathname.replace(/[?#].*/,'')+'?room='+roomId;
+  if(navigator.share){navigator.share({title:'Truth or Dare 💣',text:'มาเล่น Truth or Dare ด้วยกัน!',url});}
+  else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>prompt('Copy link:',url));}
+}
+
+function renderSpinning(){
+  const emojis=['🎲','💣','🔮','🔥','✨'];
+  let i=0;
+  box.innerHTML=`
+    <div class="card-wrap type-idle">
+      <div class="card-inner">
+        <span class="card-big-emoji spin-anim" id="spinEmoji">${emojis[0]}</span>
+        <p class="card-idle-text">กำลังสุ่ม...</p>
+      </div>
+    </div>
+    <button class="btn-random" disabled>⏳ กำลังสุ่ม...</button>
+    <div class="btn-row">
+      <button class="btn-truth" disabled>🔮 Truth</button>
+      <button class="btn-dare" disabled>🔥 Dare</button>
+    </div>`;
+  const iv=setInterval(()=>{
+    const el=document.getElementById('spinEmoji');
+    if(el)el.textContent=emojis[++i%emojis.length];
+    else clearInterval(iv);
+  },100);
+}
+
+function renderGame(card){
+  let cardHtml='';
+  if(!card){
+    cardHtml=`
+      <div class="card-wrap type-idle">
+        <div class="card-inner">
+          <span class="card-big-emoji">🎲</span>
+          <p class="card-idle-text">เลือก Truth หรือ Dare<br>แล้วกดสุ่มได้เลย!</p>
+        </div>
+      </div>`;
+  } else {
+    const pool=card.type==='truth'?truths:dares;
+    const emoji=card.type==='truth'?'🔮':'🔥';
+    const badgeClass=card.type==='truth'?'badge-truth':'badge-dare';
+    const label=card.type==='truth'?'✨ TRUTH':'🔥 DARE';
+    cardHtml=`
+      <div class="card-wrap type-${card.type}">
+        <div class="card-inner">
+          <span class="card-badge ${badgeClass}">${label}</span>
+          <span class="card-big-emoji" style="animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275)">${emoji}</span>
+          <p class="card-question">${pool[card.idx]}</p>
+        </div>
+      </div>`;
+  }
+  box.innerHTML=`
+    ${cardHtml}
+    <button class="btn-random" onclick="spin('random')">🎲 สุ่มเลย! (Truth หรือ Dare)</button>
+    <div class="btn-row">
+      <button class="btn-truth" onclick="spin('truth')">🔮 สุ่ม Truth</button>
+      <button class="btn-dare" onclick="spin('dare')">🔥 สุ่ม Dare</button>
+    </div>`;
+}
+
+async function spin(type){
   if(isSpinning)return;
   isSpinning=true;
-  const wrap=document.getElementById('cardWrap');
-  const inner=document.getElementById('cardInner');
-  const emojiEl=document.getElementById('cardEmoji');
-  let spinIdx=0;
-  const spinEmojis=type==='truth'?['🔮','💫','✨','🌟','💎']:type==='dare'?['🔥','💥','⚡','🎯','💣']:['🎲','💣','🔮','🔥','✨'];
-  emojiEl.classList.add('spinning-emoji');
-  wrap.className='card-wrap type-idle';
-  inner.innerHTML=`<span class="card-big-emoji spinning-emoji" id="cardEmoji" style="font-size:4.5rem">${spinEmojis[0]}</span>`;
-  const interval=setInterval(()=>{
-    const el=document.getElementById('cardEmoji');
-    if(el)el.textContent=spinEmojis[++spinIdx%spinEmojis.length];
-  },100);
-  setTimeout(()=>{
-    clearInterval(interval);
-    const resolvedType=type==='random'?(Math.random()>0.5?'truth':'dare'):type;
-    const pool=resolvedType==='truth'?truths:dares;
-    const idx=Math.floor(Math.random()*pool.length);
-    current={type:resolvedType,idx};
-    location.hash=(resolvedType==='truth'?'t':'d')+'-'+idx;
-    showCard(resolvedType,idx);
-    launchConfetti();
-    isSpinning=false;
-  },1100);
+  await roomRef.update({card:'spinning'});
+  const resolvedType=type==='random'?(Math.random()>0.5?'truth':'dare'):type;
+  const pool=resolvedType==='truth'?truths:dares;
+  const idx=Math.floor(Math.random()*pool.length);
+  setTimeout(()=>roomRef.update({card:{type:resolvedType,idx}}),1100);
 }
 
-function showCard(type,idx){
-  const pool=type==='truth'?truths:dares;
-  const wrap=document.getElementById('cardWrap');
-  const emoji=type==='truth'?'🔮':'🔥';
-  const badgeClass=type==='truth'?'badge-truth':'badge-dare';
-  const label=type==='truth'?'✨ TRUTH':'🔥 DARE';
-  wrap.className='card-wrap type-'+type;
-  document.getElementById('cardInner').innerHTML=`
-    <span class="card-badge ${badgeClass}">${label}</span>
-    <span class="card-big-emoji" id="cardEmoji">${emoji}</span>
-    <p class="card-question">${pool[idx]}</p>`;
-}
-
-function shareLink(){
-  if(current.type===null){showToast('สุ่มก่อนนะ 🎲');return;}
-  const hash=(current.type==='truth'?'t':'d')+'-'+current.idx;
-  const url=location.origin+location.pathname+'#'+hash;
-  if(navigator.share){navigator.share({title:'Truth or Dare 💣',text:'มาเล่น Truth or Dare ด้วยกัน!',url});}
-  else{navigator.clipboard.writeText(url).then(()=>showToast('คัดลอก link แล้ว! ส่งให้แฟนได้เลย 💕')).catch(()=>showToast('Copy: '+url));}
+function goBack(){
+  if(roomListener&&roomRef)roomRef.off('value',roomListener);
+  location.href='index.html';
 }
 
 function showToast(msg){
@@ -165,27 +277,27 @@ function showToast(msg){
 }
 
 function launchConfetti(){
-  const container=document.getElementById('confetti');
+  const c=document.getElementById('confetti');
   const colors=['#ff6b9d','#c77dff','#4cc9f0','#ffd60a','#06d6a0'];
-  container.innerHTML='';
+  c.innerHTML='';
   for(let i=0;i<50;i++){
     const p=document.createElement('div');p.className='confetti-piece';
     p.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1+Math.random()*1.5}s;animation-delay:${Math.random()*.3}s;`;
-    container.appendChild(p);
+    c.appendChild(p);
   }
-  setTimeout(()=>container.innerHTML='',3000);
+  setTimeout(()=>c.innerHTML='',3000);
 }
 
-// load from hash
-const hash=location.hash;
-if(hash.match(/^#[td]-\d+$/)){
-  const type=hash[1]==='t'?'truth':'dare';
-  const idx=parseInt(hash.slice(3));
-  const pool=type==='truth'?truths:dares;
-  if(!isNaN(idx)&&idx>=0&&idx<pool.length){
-    current={type,idx};
-    showCard(type,idx);
-  }
+const params=new URLSearchParams(location.search);
+const roomParam=params.get('room');
+const roleParam=params.get('r');
+if(roomParam){
+  roomId=roomParam.toUpperCase();
+  if(roleParam==='h'){myRole='host';roomRef=db.ref('tod/'+roomId);subscribeRoom();}
+  else{doJoinGuest(roomId);}
+} else {
+  renderHome();
+  createRoom();
 }
 </script>
 </body>
